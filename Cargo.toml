@@ -1,0 +1,11 @@
+[package]
+name = "update-informer"
+version = "0.1.0"
+edition = "2021"
+authors = ["Mikhail Grachev <work@mgrachev.com>"]
+description = "Update informer for CLI applications"
+homepage = "https://github.com/mgrachev/update-informer"
+license = "MIT"
+readme = "README.md"
+
+[dependencies]
