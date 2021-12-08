@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### 🚀 Added
+- Check version on crates.io [#1](https://github.com/mgrachev/update-informer/pull/1) ([@mgrachev](https://github.com/mgrachev))
 
 ### ⚙️ Changed
 
