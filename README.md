@@ -11,20 +11,35 @@ Add to `Cargo.toml`:
 update-notifier = "0.1.0"
 ```
 
-And then:
+To check the version on crates.io:
 
 ```rust
-match update_informer::check_version(env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION")) {
-    Ok(result) => match result {
-        Some(version) => {
-            println!("New version is available: {}", version);
-        }
-        None => {
-            println!("No new version");
-        }
-    },
-    Err(e) => {
-        eprint!("Error: {}", e);
+use update_informer::registry::Crates;
+
+match update_informer::check_version(Crates, env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"))? {
+    Some(version) => {
+        println!("New version is available: {}", version);
+    }
+    None => {
+        println!("No new version");
+    }
+}
+```
+
+To check the version on GitHub:
+
+```rust
+use update_informer::registry::GitHub;
+
+// Format: {owner}/{repo}
+let pkg_name = format!("{}/{}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_NAME"));
+
+match update_informer::check_version(GitHub, &pkg_name, env!("CARGO_PKG_VERSION"))? {
+    Some(version) => {
+        println!("New version is available: {}", version);
+    }
+    None => {
+        println!("No new version");
     }
 };
 ```
