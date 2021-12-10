@@ -11,7 +11,7 @@ where
     T: Registry,
 {
     let current_version = semver::Version::parse(version)?;
-    let latest_version = <T as Registry>::get_latest_version(pkg_name)?;
+    let latest_version = T::get_latest_version(pkg_name)?;
 
     if let Some(v) = latest_version {
         let v = semver::Version::parse(&v)?;

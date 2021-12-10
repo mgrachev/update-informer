@@ -6,8 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### 🚀 Added
+- Add tests for registries: Crates.io and GitHub [#9](https://github.com/mgrachev/update-informer/pull/9) ([@mgrachev](https://github.com/mgrachev))
 - Check updates on GitHub [#8](https://github.com/mgrachev/update-informer/pull/8) ([@mgrachev](https://github.com/mgrachev))
-- Check updates on crates.io [#1](https://github.com/mgrachev/update-informer/pull/1) ([@mgrachev](https://github.com/mgrachev))
+- Check updates on Crates.io [#1](https://github.com/mgrachev/update-informer/pull/1) ([@mgrachev](https://github.com/mgrachev))
 
 ### ⚙️ Changed
 
