@@ -1,5 +1,7 @@
 # Update-informer
 
+[![CI](https://github.com/mgrachev/update-informer/workflows/CI/badge.svg)](https://github.com/mgrachev/update-informer/actions)
+
 Update informer for CLI applications written in Rust 🦀
 
 ## Usage
