@@ -1,0 +1,145 @@
+#########################################################
+### GitHub workflow files do not support YAML anchors ###
+#########################################################
+name: CI
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  check:
+    name: Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions-rs/toolchain@v1
+        id: toolchain
+        with:
+          profile: minimal
+          toolchain: stable
+      - name: Chown cargo registry because of caching
+        run: sudo chown -R runner ~/.cargo/registry
+      - name: Cache cargo registry and target
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            target
+          key: check-${{ steps.toolchain.outputs.rustc_hash }}-cargo-${{ hashFiles('**/Cargo.toml') }}
+      - name: Check
+        uses: actions-rs/cargo@v1
+        with:
+          command: check
+      - name: Cleanup for caching
+        uses: actions-rs/cargo@v1
+        with:
+          command: clean
+        if: steps.cache-target.outputs.cache-hit != 'true'
+
+  fmt:
+    name: Rustfmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          components: rustfmt
+      - uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --all -- --check
+
+  clippy:
+    name: Clippy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions-rs/toolchain@v1
+        id: toolchain
+        with:
+          profile: minimal
+          toolchain: stable
+          components: clippy
+      - name: Chown cargo registry because of caching
+        run: sudo chown -R runner ~/.cargo/registry
+      - name: Cache cargo registry and target
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            target
+          key: clippy-${{ steps.toolchain.outputs.rustc_hash }}-cargo-${{ hashFiles('**/Cargo.toml') }}
+      - uses: actions-rs/clippy-check@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          args: --all-features -- -D warnings
+      - name: Cleanup for caching
+        uses: actions-rs/cargo@v1
+        with:
+          command: clean
+        if: steps.cache-target.outputs.cache-hit != 'true'
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions-rs/toolchain@v1
+        id: toolchain
+        with:
+          profile: minimal
+          toolchain: stable
+      - name: Chown cargo registry because of caching
+        run: sudo chown -R runner ~/.cargo/registry
+      - name: Cache cargo registry and target
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            target
+          key: build-${{ steps.toolchain.outputs.rustc_hash }}-cargo-${{ hashFiles('**/Cargo.toml') }}
+      - name: Build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+      - name: Cleanup for caching
+        uses: actions-rs/cargo@v1
+        with:
+          command: clean
+        if: steps.cache-target.outputs.cache-hit != 'true'
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions-rs/toolchain@v1
+        id: toolchain
+        with:
+          profile: minimal
+          toolchain: stable
+      - name: Chown cargo registry because of caching
+        run: sudo chown -R runner ~/.cargo/registry
+      - name: Cache cargo registry and target
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            target
+          key: test-${{ steps.toolchain.outputs.rustc_hash }}-cargo-${{ hashFiles('**/Cargo.toml') }}
+      - name: Test
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+      - name: Cleanup for caching
+        uses: actions-rs/cargo@v1
+        with:
+          command: clean
+        if: steps.cache-target.outputs.cache-hit != 'true'
