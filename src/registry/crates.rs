@@ -1,7 +1,6 @@
-use serde::Deserialize;
-
 use crate::registry::Registry;
-use crate::Error;
+use crate::{Error, Package};
+use serde::Deserialize;
 
 #[cfg(test)]
 use mockito;
@@ -21,19 +20,19 @@ struct Version {
 
 pub struct Crates;
 
+#[cfg(not(test))]
 fn get_base_url() -> String {
-    #[cfg(not(test))]
-    let base_url = format!("{}/api/v1/crates", REGISTRY_URL);
+    format!("{}/api/v1/crates", REGISTRY_URL)
+}
 
-    #[cfg(test)]
-    let base_url = format!("{}/api/v1/crates", &mockito::server_url());
-
-    base_url
+#[cfg(test)]
+fn get_base_url() -> String {
+    format!("{}/api/v1/crates", &mockito::server_url())
 }
 
 impl Registry for Crates {
-    fn get_latest_version(pkg_name: &str) -> Result<Option<String>, Error> {
-        let url = format!("{}/{}/versions", get_base_url(), pkg_name);
+    fn get_latest_version(pkg: &Package) -> Result<Option<String>, Error> {
+        let url = format!("{}/{}/versions", get_base_url(), pkg);
 
         let resp: Response = ureq::get(&url).call()?.into_json()?;
 
@@ -48,33 +47,26 @@ impl Registry for Crates {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use mockito::mock;
-    use std::fs;
+    use crate::test_helper::mock_crates;
 
-    const PKG_NAME: &str = "dotenv-linter";
+    const PKG_NAME: &str = "repo";
     const FIXTURES_PATH: &str = "tests/fixtures/registry/crates";
 
     #[test]
     fn failure_test() {
-        let mock_path = format!("/api/v1/crates/{}/versions", PKG_NAME);
-        let data = fs::read_to_string(format!("{}/not_found.json", FIXTURES_PATH))
-            .expect("read file to string");
+        let pkg = Package::new(PKG_NAME);
+        let data_path = format!("{}/not_found.json", FIXTURES_PATH);
+        let _mock = mock_crates(&pkg, 404, &data_path);
 
-        let _mock = mock("GET", mock_path.as_str())
-            .with_status(404)
-            .with_header("Content-Type", "application/json; charset=utf-8")
-            .with_body(data.to_string())
-            .create();
-
-        let result = Crates::get_latest_version(PKG_NAME);
+        let result = Crates::get_latest_version(&pkg);
         assert!(result.is_err());
     }
 
     #[test]
     fn success_test() {
-        let mock_path = format!("/api/v1/crates/{}/versions", PKG_NAME);
-        let data = fs::read_to_string(format!("{}/versions.json", FIXTURES_PATH))
-            .expect("read file to string");
+        let pkg = Package::new(PKG_NAME);
+        let data_path = format!("{}/versions.json", FIXTURES_PATH);
+        let (_mock, data) = mock_crates(&pkg, 200, &data_path);
 
         let json: Response = serde_json::from_str(&data).expect("deserialize json");
         let latest_version = json
@@ -84,13 +76,7 @@ mod tests {
             .num
             .clone();
 
-        let _mock = mock("GET", mock_path.as_str())
-            .with_status(200)
-            .with_header("Content-Type", "application/json; charset=utf-8")
-            .with_body(data.to_string())
-            .create();
-
-        let result = Crates::get_latest_version(PKG_NAME);
+        let result = Crates::get_latest_version(&pkg);
 
         assert!(result.is_ok());
         assert_eq!(result.expect("get result"), Some(latest_version));
