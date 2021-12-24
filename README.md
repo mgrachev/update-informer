@@ -18,7 +18,7 @@ To check the version on crates.io:
 ```rust
 use update_informer::registry::Crates;
 
-match update_informer::check_version(Crates, env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"))? {
+match update_informer::check_version(Crates, env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"), Duration::from_secs(60 * 60 * 24))? {
     Some(version) => {
         println!("New version is available: {}", version);
     }
@@ -36,7 +36,7 @@ use update_informer::registry::GitHub;
 // Format: {owner}/{repo}
 let pkg_name = format!("{}/{}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_NAME"));
 
-match update_informer::check_version(GitHub, &pkg_name, env!("CARGO_PKG_VERSION"))? {
+match update_informer::check_version(GitHub, &pkg_name, env!("CARGO_PKG_VERSION"), Duration::from_secs(60 * 60 * 24))? {
     Some(version) => {
         println!("New version is available: {}", version);
     }
