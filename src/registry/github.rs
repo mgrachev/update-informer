@@ -13,6 +13,7 @@ struct Response {
     tag_name: String,
 }
 
+/// The most popular and largest project hosting.
 pub struct GitHub;
 
 #[cfg(not(test))]

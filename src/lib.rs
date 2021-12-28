@@ -1,3 +1,65 @@
+//! # Overview
+//! Update informer for CLI applications written in Rust. It checks for a new version on **Crates.io** and **GitHub**.
+//!
+//! ### Benefits
+//! * Support of **Crates.io** and **GitHub**.
+//! * **Configurable frequency** of checks.
+//! * **Minimum dependencies** - only [ureq](https://github.com/algesten/ureq), [semver](https://github.com/dtolnay/semver) and [serde](https://github.com/serde-rs/serde).
+//!
+//! ## Usage
+//!
+//! To check for a new version on **Crates.io**, use the `check_version` function. This function takes the project name and current version as well as check interval:
+//!
+//! ```rust
+//! use std::error::Error;
+//! use std::time::Duration;
+//! use update_informer::{check_version, registry::Crates};
+//!
+//! fn main() -> Result<(), Box<dyn Error>> {
+//!     match check_version(Crates, "repo", "0.1.0", Duration::from_secs(60 * 60 * 24))? {
+//!         Some(version) => {
+//!             println!("New version is available: {}", version);
+//!         }
+//!         None => {
+//!             println!("No new version");
+//!         }
+//!     }
+//!
+//!     Ok(())
+//! }
+//! ```
+//!
+//! Also, you can take the name and version of the project from **Cargo** using environment variables:
+//!
+//! ```rust
+//! use std::time::Duration;
+//! use update_informer::{check_version, registry::Crates};
+//!
+//! check_version(Crates, env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"), Duration::from_secs(60 * 60 * 24));
+//! ```
+//!
+//! Note that the first check will start only after the interval has expired:
+//!
+//! ```rust
+//! use std::time::Duration;
+//! use update_informer::{check_version, registry::Crates};
+//!
+//! const EVERY_HOUR: Duration = Duration::from_secs(60 * 60);
+//!
+//! check_version(Crates, "repo", "0.1.0", EVERY_HOUR); // The check will start only after an hour
+//! ```
+//!
+//! To check for a new version on **GitHub**:
+//!
+//! ```rust
+//! use std::time::Duration;
+//! use update_informer::{check_version, registry::GitHub};
+//!
+//! check_version(GitHub, "owner/repo", "0.1.0", Duration::from_secs(60 * 60 * 24));
+//! ```
+//!
+//! Note that the project name must contain the owner.
+
 use crate::package::Package;
 use crate::registry::Registry;
 use crate::version::Version;
@@ -11,18 +73,53 @@ mod version_file;
 #[cfg(test)]
 mod test_helper;
 
+/// A registry service that stores information about releases.
 pub mod registry;
 
 type Error = Box<dyn std::error::Error>;
 
-pub fn check_version<S, N, V>(
-    _service: S,
+/// Checks for a new version on Crates.io and GitHub.
+///
+/// # Arguments
+/// * `registry` - A registry service such as Crates.io or GitHub.
+/// * `name` - A project name.
+/// * `version` - Current version of the project.
+/// * `interval` - An interval how often to check for a new version.
+///
+/// # Examples
+/// To check for a new version on **Crates.io**:
+/// ```rust
+/// use std::time::Duration;
+/// use update_informer::{check_version, registry::Crates};
+///
+/// check_version(Crates, "repo", "0.1.0", Duration::from_secs(60 * 60 * 24));
+/// ```
+///
+/// To check for a new version on **GitHub**:
+/// ```rust
+/// use std::time::Duration;
+/// use update_informer::{check_version, registry::GitHub};
+///
+/// check_version(GitHub, "owner/repo", "0.1.0", Duration::from_secs(60 * 60 * 24));
+/// ```
+/// Note that the first check will start only after the interval has expired:
+///
+/// ```rust
+/// use std::time::Duration;
+/// use update_informer::{check_version, registry::Crates};
+///
+/// const EVERY_HOUR: Duration = Duration::from_secs(60 * 60);
+///
+/// check_version(Crates, "repo", "0.1.0", EVERY_HOUR); // The check will start only after an hour
+/// ```
+pub fn check_version<R, N, V>(
+    _registry: R,
     name: N,
     version: V,
     interval: Duration,
 ) -> Result<Option<Version>, Error>
 where
-    S: Registry,
+    R: Registry,
     N: AsRef<str>,
     V: AsRef<str>,
 {
@@ -34,7 +131,7 @@ where
         // This is needed to update mtime of the file
         latest_version_file.recreate_file()?;
 
-        match S::get_latest_version(&pkg)? {
+        match R::get_latest_version(&pkg)? {
             Some(v) => {
                 latest_version_file.write_version(&v)?;
                 v
