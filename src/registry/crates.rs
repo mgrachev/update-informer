@@ -18,6 +18,7 @@ struct Version {
     num: String,
 }
 
+/// The Rust community’s crate registry.
 pub struct Crates;
 
 #[cfg(not(test))]
