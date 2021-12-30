@@ -8,24 +8,14 @@
 //!
 //! ## Usage
 //!
-//! To check for a new version on **Crates.io**, use the `check_version` function. This function takes the project name and current version as well as check interval:
+//! To check for a new version on **Crates.io**, use the [check_version] function. This function takes the project name and current version as well as check interval:
 //!
 //! ```rust
-//! use std::error::Error;
 //! use std::time::Duration;
 //! use update_informer::{check_version, registry::Crates};
 //!
-//! fn main() -> Result<(), Box<dyn Error>> {
-//!     match check_version(Crates, "repo", "0.1.0", Duration::from_secs(60 * 60 * 24))? {
-//!         Some(version) => {
-//!             println!("New version is available: {}", version);
-//!         }
-//!         None => {
-//!             println!("No new version");
-//!         }
-//!     }
-//!
-//!     Ok(())
+//! if let Ok(Some(version)) = check_version(Crates, "repo", "0.1.0", Duration::from_secs(60 * 60 * 24)) {
+//!     println!("New version is available: {}", version);
 //! }
 //! ```
 //!
@@ -49,7 +39,7 @@
 //! check_version(Crates, "repo", "0.1.0", EVERY_HOUR); // The check will start only after an hour
 //! ```
 //!
-//! To check for a new version on **GitHub**:
+//! To check for a new version on **GitHub** (note that the project name must contain the owner):
 //!
 //! ```rust
 //! use std::time::Duration;
@@ -58,7 +48,46 @@
 //! check_version(GitHub, "owner/repo", "0.1.0", Duration::from_secs(60 * 60 * 24));
 //! ```
 //!
-//! Note that the project name must contain the owner.
+//! ## Tests
+//!
+//! In order not to check for updates in tests, you can use the [stub_check_version] function, which returns the desired version.
+//!
+//! Example of usage in unit tests:
+//!
+//! ```rust
+//! use std::time::Duration;
+//! use update_informer::registry::Crates;
+//!
+//! #[cfg(not(test))]
+//! let result = update_informer::check_version(Crates, "repo", "0.1.0", Duration::from_secs(60 * 60 * 24));
+//!
+//! #[cfg(test)]
+//! let result = update_informer::stub_check_version(Crates, "repo", "0.1.0", Duration::from_secs(60 * 60 * 24), "1.0.0");
+//!
+//! if let Ok(Some(version)) = result {
+//!     println!("New version is available: {}", version);
+//! }
+//! ```
+//!
+//! To use the [stub_check_version] function in integration tests, you must first add the feature flag to `Cargo.toml`:
+//!
+//! ```toml
+//! [features]
+//! stub_check_version = []
+//! ```
+//!
+//! Then use this feature flag in your code and integration tests:
+//!
+//! ```rust
+//! use std::time::Duration;
+//! use update_informer::registry::Crates;
+//!
+//! #[cfg(not(feature = "stub_check_version"))]
+//! let result = update_informer::check_version(Crates, "repo", "0.1.0", Duration::from_secs(60 * 60 * 24));
+//!
+//! #[cfg(feature = "stub_check_version")]
+//! let result = update_informer::stub_check_version(Crates, "repo", "0.1.0", Duration::from_secs(60 * 60 * 24), "1.0.0");
+//! ```
 
 use crate::package::Package;
 use crate::registry::Registry;
@@ -149,6 +178,45 @@ where
     }
 
     Ok(None)
+}
+
+/// Returns the desired version as a new version.
+/// Used only for tests.
+///
+/// # Arguments
+/// * `registry` - A registry service such as Crates.io or GitHub (not used).
+/// * `name` - A project name (not used).
+/// * `version` - Current version of the project (not used).
+/// * `interval` - An interval how often to check for a new version (not used).
+/// * `new_version` - A desired version.
+///
+/// # Examples
+/// ```rust
+/// use std::time::Duration;
+/// use update_informer::{registry::Crates, stub_check_version};
+///
+/// let result = stub_check_version(Crates, "repo", "0.1.0", Duration::from_secs(60 * 60 * 24), "1.0.0");
+/// assert!(result.is_ok());
+///
+/// let version = result.unwrap();
+/// assert!(version.is_some());
+/// assert_eq!(version.unwrap().to_string(), "v1.0.0");
+/// ```
+pub fn stub_check_version<R, N, V>(
+    _registry: R,
+    _name: N,
+    _version: V,
+    _interval: Duration,
+    new_version: V,
+) -> Result<Option<Version>, Error>
+where
+    R: Registry,
+    N: AsRef<str>,
+    V: AsRef<str>,
+{
+    let version = Version::parse(new_version)?;
+
+    Ok(Some(version))
 }
 
 #[cfg(test)]
@@ -287,5 +355,15 @@ mod tests {
 
             assert!(result.is_ok());
         });
+    }
+
+    #[test]
+    fn stub_check_version_test() {
+        let version = "1.0.0";
+        let result = stub_check_version(Crates, PKG_NAME, CURRENT_VERSION, ONE_DAY, version);
+        let version = Version::parse(version).expect("parse version");
+
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap(), Some(version));
     }
 }
