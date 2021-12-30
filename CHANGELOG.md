@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### 🚀 Added
+
+### ⚙️ Changed
+
+### 🛠 Fixed
+
+## [v0.1.0] - 2021-12-30
+### 🚀 Added
+- Add `stub_check_version` function and update docs [#13](https://github.com/mgrachev/update-informer/pull/13) ([@mgrachev](https://github.com/mgrachev))
 - Add documentation and update examples [#12](https://github.com/mgrachev/update-informer/pull/12) ([@mgrachev](https://github.com/mgrachev))
 - Save latest version to file and add interval check [#11](https://github.com/mgrachev/update-informer/pull/11) ([@mgrachev](https://github.com/mgrachev))
 - Set up CI/CD [#10](https://github.com/mgrachev/update-informer/pull/10) ([@mgrachev](https://github.com/mgrachev))
@@ -16,3 +24,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### ⚙️ Changed
 
 ### 🛠 Fixed
+
+[v0.1.0]: https://github.com/mgrachev/update-informer/releases/tag/v0.1.0
