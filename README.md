@@ -1,4 +1,4 @@
-# Update-informer [![CI](https://github.com/mgrachev/update-informer/workflows/CI/badge.svg)](https://github.com/mgrachev/update-informer/actions) [![Crates.io](https://img.shields.io/crates/v/update-informer)](https://crates.io/crates/update-informer) [![docs.rs](https://img.shields.io/docsrs/update-informer)](https://docs.rs/update-informer)
+# Update-informer [![CI](https://github.com/mgrachev/update-informer/workflows/CI/badge.svg)](https://github.com/mgrachev/update-informer/actions) [![Crates.io](https://img.shields.io/crates/v/update-informer)](https://crates.io/crates/update-informer) [![docs.rs](https://img.shields.io/docsrs/update-informer)](https://docs.rs/update-informer) [![codecov](https://codecov.io/gh/mgrachev/update-informer/branch/main/graph/badge.svg?token=A4XD1DGFGJ)](https://codecov.io/gh/mgrachev/update-informer)
 
 Update informer for CLI applications written in Rust 🦀
 
