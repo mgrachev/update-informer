@@ -116,7 +116,7 @@ jobs:
         if: steps.cache-target.outputs.cache-hit != 'true'
 
   test:
-    name: Test
+    name: Test and coverage
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -124,20 +124,44 @@ jobs:
         id: toolchain
         with:
           profile: minimal
-          toolchain: stable
+          toolchain: nightly
+          override: true
       - name: Chown cargo registry because of caching
         run: sudo chown -R runner ~/.cargo/registry
-      - name: Cache cargo registry and target
+      - name: Set grcov version
+        run: echo "GRCOV_VERSION=$(cargo search --limit 1 grcov | head -n1 | cut -d '"' -f2)" >> $GITHUB_ENV
+      - name: Cache cargo registry, target, and grcov binary
+        id: test-grcov
         uses: actions/cache@v2
         with:
           path: |
             ~/.cargo/registry
+            ~/.cargo/bin/grcov
             target
-          key: test-${{ steps.toolchain.outputs.rustc_hash }}-cargo-${{ hashFiles('**/Cargo.toml') }}
-      - name: Test
+          key: test-coverage-${{ steps.toolchain.outputs.rustc_hash }}-cargo-${{ hashFiles('**/Cargo.toml') }}-${{ env.GRCOV_VERSION }}
+      - name: Install grcov
+        run: |
+          cargo install --version $GRCOV_VERSION grcov
+        if: steps.test-grcov.outputs.cache-hit != 'true'
+      - name: Clean coverage
+        run: |
+          rm -f target/debug/deps/*.gcda
+          rm -f target/debug/deps/*.gcno
+      - name: Run tests
         uses: actions-rs/cargo@v1
         with:
           command: test
+          args: --all-features --no-fail-fast
+        env:
+          CARGO_INCREMENTAL: '0'
+          RUSTFLAGS: |
+            -Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off
+          RUSTDOCFLAGS: |
+            -Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off
+      - uses: actions-rs/grcov@v0.1
+      - uses: codecov/codecov-action@v1
+        with:
+          file: ./lcov.info
       - name: Cleanup for caching
         uses: actions-rs/cargo@v1
         with:

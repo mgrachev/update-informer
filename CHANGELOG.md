@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### 🚀 Added
+- Set up code coverage [#15](https://github.com/mgrachev/update-informer/pull/15)
 
 ### ⚙️ Changed
 
@@ -24,10 +25,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add tests for registries: Crates.io and GitHub [#9](https://github.com/mgrachev/update-informer/pull/9)
 - Check updates on GitHub [#8](https://github.com/mgrachev/update-informer/pull/8)
 - Check updates on Crates.io [#1](https://github.com/mgrachev/update-informer/pull/1)
-
-### ⚙️ Changed
-
-### 🛠 Fixed
 
 [v0.2.0]: https://github.com/mgrachev/update-informer/releases/tag/v0.2.0
 [v0.1.0]: https://github.com/mgrachev/update-informer/releases/tag/v0.1.0
