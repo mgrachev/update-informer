@@ -41,6 +41,12 @@ pub(crate) fn mock_github(pkg: &Package, status: usize, data_path: &str) -> (Moc
     (mock_http(&mock_path, status, &data), data)
 }
 
+pub(crate) fn mock_pypi(pkg: &Package, status: usize, data_path: &str) -> (Mock, String) {
+    let mock_path = format!("/pypi/{}/json", pkg);
+    let data = fs::read_to_string(data_path).expect("read file to string");
+
+    (mock_http(&mock_path, status, &data), data)
+}
 pub(crate) fn mock_http(path: &str, status: usize, body: &str) -> Mock {
     mock("GET", path)
         .with_status(status)
