@@ -1,12 +1,12 @@
-use std::time::Duration;
+use std::{env::args, time::Duration};
 use update_informer::{registry::PyPI, Check, UpdateInformer};
 
 fn main() {
-    let pkg_name = env!("PYPI_PKG_NAME");
-    let current_version = env!("PYPI_PKG_VERSION");
+    let pkg_name = args().nth(1).expect("Must provide package name.");
+    let current_version = args().nth(2).expect("Must provide version.");
     let interval = Duration::from_secs(1);
 
-    let informer = UpdateInformer::new(PyPI, pkg_name, current_version, interval);
+    let informer = UpdateInformer::new(PyPI, pkg_name.clone(), current_version.clone(), interval);
     if let Ok(Some(version)) = informer.check_version() {
         println!(
             "A new release of {pkg_name} is available: v{current_version} -> {new_version}",
