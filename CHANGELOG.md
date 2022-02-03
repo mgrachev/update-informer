@@ -6,8 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### 🚀 Added
+- Add PyPI support [#16](https://github.com/mgrachev/update-informer/pull/16) ([@itamarst](https://github.com/itamarst))
+- Add logo [#19](https://github.com/mgrachev/update-informer/pull/19)
 - Set up code coverage [#15](https://github.com/mgrachev/update-informer/pull/15)
-- Add PyPI support [#16](https://github.com/mgrachev/update-informer/pull/16)
 
 ### ⚙️ Changed
 
