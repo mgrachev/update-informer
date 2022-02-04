@@ -16,6 +16,8 @@ It checks for a new version on **Crates.io** and **GitHub** 🚀
 The idea is actually not new, as GitHub has been doing for a long time in its [CLI application](https://cli.github.com).<br>
 There is also a popular [JavaScript library](https://github.com/yeoman/update-notifier).
 
+[Update-informer](https://evrone.com/update-informer?utm_source=github&utm_campaign=update-informer) is created & supported by [Evrone](https://evrone.com/?utm_source=github&utm_campaign=update-informer).
+
 ## Usage
 
 Add `update-informer` to `Cargo.toml`:
