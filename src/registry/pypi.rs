@@ -1,0 +1,76 @@
+use crate::registry::Registry;
+use crate::{Error, Package};
+use serde::Deserialize;
+
+#[cfg(test)]
+use mockito;
+
+#[derive(Deserialize, Debug)]
+struct Response {
+    info: Info,
+}
+
+#[derive(Deserialize, Debug)]
+struct Info {
+    version: String,
+    yanked: bool,
+}
+
+/// The Python community’s package registry.
+pub struct PyPI;
+
+#[cfg(not(test))]
+fn get_base_url() -> String {
+    "https://pypi.org/pypi".to_string()
+}
+
+#[cfg(test)]
+fn get_base_url() -> String {
+    format!("{}/pypi", &mockito::server_url())
+}
+
+impl Registry for PyPI {
+    fn get_latest_version(pkg: &Package) -> Result<Option<String>, Error> {
+        let url = format!("{}/{}/json", get_base_url(), pkg);
+
+        let resp: Response = ureq::get(&url).call()?.into_json()?;
+
+        if !resp.info.yanked {
+            return Ok(Some(resp.info.version));
+        }
+
+        Ok(None)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::test_helper::mock_pypi;
+
+    const PKG_NAME: &str = "filprofiler";
+    const FIXTURES_PATH: &str = "tests/fixtures/registry/pypi";
+
+    #[test]
+    fn failure_test() {
+        let pkg = Package::new(PKG_NAME);
+        let data_path = format!("{}/not_found.json", FIXTURES_PATH);
+        let _mock = mock_pypi(&pkg, 404, &data_path);
+
+        let result = PyPI::get_latest_version(&pkg);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn success_test() {
+        let pkg = Package::new(PKG_NAME);
+        let data_path = format!("{}/release.json", FIXTURES_PATH);
+        let (_mock, _data) = mock_pypi(&pkg, 200, &data_path);
+
+        let latest_version = "2022.1.1".to_string();
+        let result = PyPI::get_latest_version(&pkg);
+
+        assert!(result.is_ok());
+        assert_eq!(result.expect("get result"), Some(latest_version));
+    }
+}
