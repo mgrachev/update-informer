@@ -56,6 +56,7 @@
 //! To check for a new version on **PyPI**:
 //!
 //! ```rust
+//! use std::time::Duration;
 //! use update_informer::{registry::PyPI, Check, UpdateInformer};
 //!
 //! let informer = UpdateInformer::new(PyPI, "yourpackage", "0.1.0", Duration::from_secs(60 * 60 * 24));
