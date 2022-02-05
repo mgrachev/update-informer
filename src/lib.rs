@@ -214,7 +214,7 @@ impl<R: Registry, N: AsRef<str>, V: AsRef<str>> Check for UpdateInformer<R, N, V
     /// ```
     fn check_version(&self) -> Result<Option<Version>, Error> {
         let pkg = Package::new(self.name.as_ref());
-        let latest_version_file = VersionFile::new(&pkg, self.version.as_ref());
+        let latest_version_file = VersionFile::new(&pkg, self.version.as_ref())?;
         let last_modified = latest_version_file.last_modified()?;
 
         let latest_version = if last_modified >= self.interval {

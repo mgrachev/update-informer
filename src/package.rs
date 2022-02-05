@@ -2,7 +2,7 @@ use std::fmt::{Display, Formatter};
 
 #[derive(Debug, PartialEq)]
 pub struct Package<'a> {
-    owner: Option<&'a str>,
+    pub(crate) owner: Option<&'a str>,
     pub(crate) name: &'a str,
 }
 

@@ -9,6 +9,7 @@ license = "MIT"
 readme = "README.md"
 
 [dependencies]
+directories = "4.0"
 semver = "1.0"
 
 serde = { version = "1.0", features = ["derive"] }

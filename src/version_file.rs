@@ -13,11 +13,16 @@ pub(crate) struct VersionFile<'a> {
 const VERSION_SUFFIX: &str = "latest-version";
 
 impl<'a> VersionFile<'a> {
-    pub(crate) fn new(pkg: &Package, version: &'a str) -> Self {
-        let file_name = format!(".{}-{}", pkg.name, VERSION_SUFFIX);
-        let path = home_path().join(file_name);
+    pub(crate) fn new(pkg: &Package, version: &'a str) -> Result<Self, Error> {
+        let owner = if let Some(owner) = pkg.owner {
+            format!("{}-", owner)
+        } else {
+            "".to_string()
+        };
+        let file_name = format!("{}{}-{}", owner, pkg.name, VERSION_SUFFIX);
+        let path = cache_path()?.join(file_name);
 
-        Self { path, version }
+        Ok(Self { path, version })
     }
 
     pub(crate) fn last_modified(&self) -> Result<Duration, Error> {
@@ -49,20 +54,17 @@ impl<'a> VersionFile<'a> {
 }
 
 #[cfg(not(test))]
-#[cfg(any(target_os = "macos", target_os = "linux"))]
-fn home_path() -> PathBuf {
-    PathBuf::from(env!("HOME"))
-}
-
-#[cfg(not(test))]
-#[cfg(target_os = "windows")]
-fn home_path() -> PathBuf {
-    PathBuf::from(env!("USERPROFILE")) // Or use $HOMEPATH?
+fn cache_path() -> Result<PathBuf, Error> {
+    let project_dir = directories::ProjectDirs::from("", "", "update-informer-rs")
+        .map_or(Err("Unable to find cache directory"), Ok)?;
+    let directory = project_dir.cache_dir().to_path_buf();
+    fs::create_dir_all(&directory)?;
+    Ok(directory)
 }
 
 #[cfg(test)]
-fn home_path() -> PathBuf {
-    std::env::temp_dir().join("update-informer-test")
+fn cache_path() -> Result<PathBuf, Error> {
+    Ok(std::env::temp_dir().join("update-informer-test"))
 }
 
 #[cfg(test)]
@@ -73,12 +75,20 @@ mod tests {
     #[test]
     fn new_test() {
         let pkg = Package::new("repo");
-        let version_file1 = VersionFile::new(&pkg, "0.1.0");
+        let version_file1 = VersionFile::new(&pkg, "0.1.0").unwrap();
         let version_file2 = VersionFile {
-            path: home_path().join(".repo-latest-version"),
+            path: cache_path().unwrap().join("repo-latest-version"),
             version: "0.1.0",
         };
 
+        assert_eq!(version_file1, version_file2);
+    }
+
+    #[test]
+    fn create_version_file_twice_test() {
+        let pkg = Package::new("repo");
+        let version_file1 = VersionFile::new(&pkg, "0.1.0").unwrap();
+        let version_file2 = VersionFile::new(&pkg, "0.1.0").unwrap();
         assert_eq!(version_file1, version_file2);
     }
 
