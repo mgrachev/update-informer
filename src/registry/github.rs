@@ -27,6 +27,8 @@ fn get_base_url() -> String {
 }
 
 impl Registry for GitHub {
+    const NAME: &'static str = "github";
+
     fn get_latest_version(pkg: &Package) -> Result<Option<String>, Error> {
         let url = format!("{}/{}/releases/latest", get_base_url(), pkg);
 

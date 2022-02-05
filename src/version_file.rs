@@ -13,13 +13,15 @@ pub(crate) struct VersionFile<'a> {
 const VERSION_SUFFIX: &str = "latest-version";
 
 impl<'a> VersionFile<'a> {
-    pub(crate) fn new(pkg: &Package, version: &'a str) -> Result<Self, Error> {
+    pub(crate) fn new(registry: &str, pkg: &Package, version: &'a str) -> Result<Self, Error> {
         let owner = if let Some(owner) = pkg.owner {
             format!("{}-", owner)
         } else {
             "".to_string()
         };
-        let file_name = format!("{}{}-{}", owner, pkg.name, VERSION_SUFFIX);
+        // Use _ to separate registry so that it's not confused with owner in a
+        // different registry. Highly unlikely, to be fair.
+        let file_name = format!("{}_{}{}-{}", registry, owner, pkg.name, VERSION_SUFFIX);
         let path = cache_path()?.join(file_name);
 
         Ok(Self { path, version })
@@ -75,9 +77,9 @@ mod tests {
     #[test]
     fn new_test() {
         let pkg = Package::new("repo");
-        let version_file1 = VersionFile::new(&pkg, "0.1.0").unwrap();
+        let version_file1 = VersionFile::new("myreg", &pkg, "0.1.0").unwrap();
         let version_file2 = VersionFile {
-            path: cache_path().unwrap().join("repo-latest-version"),
+            path: cache_path().unwrap().join("myreg_repo-latest-version"),
             version: "0.1.0",
         };
 
@@ -87,8 +89,8 @@ mod tests {
     #[test]
     fn create_version_file_twice_test() {
         let pkg = Package::new("repo");
-        let version_file1 = VersionFile::new(&pkg, "0.1.0").unwrap();
-        let version_file2 = VersionFile::new(&pkg, "0.1.0").unwrap();
+        let version_file1 = VersionFile::new("reg", &pkg, "0.1.0").unwrap();
+        let version_file2 = VersionFile::new("reg", &pkg, "0.1.0").unwrap();
         assert_eq!(version_file1, version_file2);
     }
 

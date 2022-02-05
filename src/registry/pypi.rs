@@ -30,6 +30,8 @@ fn get_base_url() -> String {
 }
 
 impl Registry for PyPI {
+    const NAME: &'static str = "pypi";
+
     fn get_latest_version(pkg: &Package) -> Result<Option<String>, Error> {
         let url = format!("{}/{}/json", get_base_url(), pkg);
 
