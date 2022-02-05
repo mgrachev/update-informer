@@ -23,6 +23,7 @@ pub(crate) fn within_test_dir(f: fn(path: PathBuf)) {
     fs::remove_dir_all(test_dir).expect("remove test dir");
 
     if result.is_err() {
+        drop(_m);
         panic::resume_unwind(result.unwrap_err());
     }
 }
