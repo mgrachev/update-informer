@@ -1,6 +1,7 @@
 use crate::registry::Registry;
-use crate::{Error, Package};
+use crate::{http, Error, Package};
 use serde::Deserialize;
+use std::time::Duration;
 
 #[cfg(test)]
 use mockito;
@@ -27,13 +28,12 @@ fn get_base_url() -> String {
 }
 
 impl Registry for GitHub {
-    fn get_latest_version(pkg: &Package) -> Result<Option<String>, Error> {
+    fn get_latest_version(pkg: &Package, timeout: Duration) -> Result<Option<String>, Error> {
         let url = format!("{}/{}/releases/latest", get_base_url(), pkg);
 
-        let resp: Response = ureq::get(&url)
-            .set("Accept", "application/vnd.github.v3+json")
-            .call()?
-            .into_json()?;
+        let resp: Response = http::get(&url, timeout)
+            .add_header("Accept", "application/vnd.github.v3+json")
+            .call()?;
 
         if resp.tag_name.starts_with('v') {
             return Ok(Some(resp.tag_name[1..].to_string()));
@@ -50,6 +50,7 @@ mod tests {
 
     const PKG_NAME: &str = "owner/repo";
     const FIXTURES_PATH: &str = "tests/fixtures/registry/github";
+    const TIMEOUT: Duration = Duration::from_secs(5);
 
     #[test]
     fn failure_test() {
@@ -57,7 +58,7 @@ mod tests {
         let data_path = format!("{}/not_found.json", FIXTURES_PATH);
         let _mock = mock_github(&pkg, 404, &data_path);
 
-        let result = GitHub::get_latest_version(&pkg);
+        let result = GitHub::get_latest_version(&pkg, TIMEOUT);
         assert!(result.is_err());
     }
 
@@ -70,7 +71,7 @@ mod tests {
         let json: Response = serde_json::from_str(&data).expect("deserialize json");
         let latest_version = json.tag_name[1..].to_string();
 
-        let result = GitHub::get_latest_version(&pkg);
+        let result = GitHub::get_latest_version(&pkg, TIMEOUT);
 
         assert!(result.is_ok());
         assert_eq!(result.expect("get result"), Some(latest_version));
