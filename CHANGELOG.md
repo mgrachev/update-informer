@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Set up code coverage [#15](https://github.com/mgrachev/update-informer/pull/15)
 
 ### ⚙️ Changed
+- Add more examples [#23](https://github.com/mgrachev/update-informer/pull/23)
 
 ### 🛠 Fixed
 
