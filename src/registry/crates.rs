@@ -1,6 +1,7 @@
 use crate::registry::Registry;
-use crate::{Error, Package};
+use crate::{http, Error, Package};
 use serde::Deserialize;
+use std::time::Duration;
 
 #[cfg(test)]
 use mockito;
@@ -32,10 +33,10 @@ fn get_base_url() -> String {
 }
 
 impl Registry for Crates {
-    fn get_latest_version(pkg: &Package) -> Result<Option<String>, Error> {
+    fn get_latest_version(pkg: &Package, timeout: Duration) -> Result<Option<String>, Error> {
         let url = format!("{}/{}/versions", get_base_url(), pkg);
 
-        let resp: Response = ureq::get(&url).call()?.into_json()?;
+        let resp: Response = http::get(&url, timeout).call()?;
 
         if let Some(v) = resp.versions.first() {
             return Ok(Some(v.num.clone()));
@@ -52,6 +53,7 @@ mod tests {
 
     const PKG_NAME: &str = "repo";
     const FIXTURES_PATH: &str = "tests/fixtures/registry/crates";
+    const TIMEOUT: Duration = Duration::from_secs(5);
 
     #[test]
     fn failure_test() {
@@ -59,7 +61,7 @@ mod tests {
         let data_path = format!("{}/not_found.json", FIXTURES_PATH);
         let _mock = mock_crates(&pkg, 404, &data_path);
 
-        let result = Crates::get_latest_version(&pkg);
+        let result = Crates::get_latest_version(&pkg, TIMEOUT);
         assert!(result.is_err());
     }
 
@@ -77,7 +79,7 @@ mod tests {
             .num
             .clone();
 
-        let result = Crates::get_latest_version(&pkg);
+        let result = Crates::get_latest_version(&pkg, TIMEOUT);
 
         assert!(result.is_ok());
         assert_eq!(result.expect("get result"), Some(latest_version));
