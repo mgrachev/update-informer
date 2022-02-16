@@ -10,11 +10,9 @@ pub(crate) struct VersionFile<'a> {
     version: &'a str,
 }
 
-const VERSION_SUFFIX: &str = "latest-version";
-
 impl<'a> VersionFile<'a> {
     pub(crate) fn new(registry: &str, pkg: &Package, version: &'a str) -> Result<Self, Error> {
-        let file_name = format!("{}-{}-{}", registry, pkg.extended_name(), VERSION_SUFFIX);
+        let file_name = format!("{}-{}", registry, pkg.extended_name());
         let path = cache_path()?.join(file_name);
 
         Ok(Self { path, version })
@@ -72,7 +70,7 @@ mod tests {
         let pkg = Package::new("repo");
         let version_file1 = VersionFile::new("myreg", &pkg, "0.1.0").unwrap();
         let version_file2 = VersionFile {
-            path: cache_path().unwrap().join("myreg-repo-latest-version"),
+            path: cache_path().unwrap().join("myreg-repo"),
             version: "0.1.0",
         };
 

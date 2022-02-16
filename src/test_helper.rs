@@ -15,7 +15,7 @@ pub(crate) fn within_test_dir(f: fn(path: PathBuf)) {
     fs::create_dir_all(&test_dir).expect("create test dir");
 
     let result = panic::catch_unwind(|| {
-        let path: PathBuf = test_dir.join("crates-repo-latest-version");
+        let path: PathBuf = test_dir.join("crates-repo");
 
         f(path);
     });
