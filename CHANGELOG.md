@@ -6,11 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### 🚀 Added
+- Add configurable request timeout and interval [#24](https://github.com/mgrachev/update-informer/pull/24)
 - Add PyPI support [#16](https://github.com/mgrachev/update-informer/pull/16) ([@itamarst](https://github.com/itamarst))
 - Add logo [#19](https://github.com/mgrachev/update-informer/pull/19)
 - Set up code coverage [#15](https://github.com/mgrachev/update-informer/pull/15)
 
 ### ⚙️ Changed
+- Add more examples [#23](https://github.com/mgrachev/update-informer/pull/23)
 - Use more platform-suitable location for version files, and with less chance of conflict between different users of the library [#21](https://github.com/mgrachev/update-informer/pull/21) ([@itamarst](https://github.com/itamarst))
 
 ### 🛠 Fixed
