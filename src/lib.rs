@@ -4,7 +4,7 @@
 //! ## Benefits
 //! * Support of [`Crates.io`], [`GitHub`] and [`PyPI`].
 //! * Configurable check frequency and request timeout.
-//! * Minimum dependencies - only [`ureq`], [`semver`] and [`serde`].
+//! * Minimum dependencies - only [`directories`], [`ureq`], [`semver`] and [`serde`].
 //!
 //! ## Usage
 //!
