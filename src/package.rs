@@ -19,6 +19,17 @@ impl<'a> Package<'a> {
             name: parts[1],
         }
     }
+
+    /// Return a name suitable for storing on filesystem, that will include
+    /// owner if it is set.
+    pub(crate) fn extended_name(&self) -> String {
+        let owner = if let Some(owner) = self.owner {
+            format!("{}-", owner)
+        } else {
+            "".to_string()
+        };
+        format!("{}{}", owner, self.name)
+    }
 }
 
 impl Display for Package<'_> {
@@ -43,7 +54,8 @@ mod tests {
             name: "repo",
         };
 
-        assert_eq!(pkg1, pkg2)
+        assert_eq!(pkg1, pkg2);
+        assert_eq!(pkg1.extended_name(), "repo".to_string())
     }
 
     #[test]
@@ -54,7 +66,8 @@ mod tests {
             name: "repo",
         };
 
-        assert_eq!(pkg1, pkg2)
+        assert_eq!(pkg1, pkg2);
+        assert_eq!(pkg1.extended_name(), "owner-repo".to_string())
     }
 
     #[test]

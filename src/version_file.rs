@@ -14,12 +14,7 @@ const VERSION_SUFFIX: &str = "latest-version";
 
 impl<'a> VersionFile<'a> {
     pub(crate) fn new(registry: &str, pkg: &Package, version: &'a str) -> Result<Self, Error> {
-        let owner = if let Some(owner) = pkg.owner {
-            format!("{}-", owner)
-        } else {
-            "".to_string()
-        };
-        let file_name = format!("{}-{}{}-{}", registry, owner, pkg.name, VERSION_SUFFIX);
+        let file_name = format!("{}-{}-{}", registry, pkg.extended_name(), VERSION_SUFFIX);
         let path = cache_path()?.join(file_name);
 
         Ok(Self { path, version })
