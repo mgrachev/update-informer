@@ -19,9 +19,7 @@ impl<'a> VersionFile<'a> {
         } else {
             "".to_string()
         };
-        // Use _ to separate registry so that it's not confused with owner in a
-        // different registry. Highly unlikely, to be fair.
-        let file_name = format!("{}_{}{}-{}", registry, owner, pkg.name, VERSION_SUFFIX);
+        let file_name = format!("{}-{}{}-{}", registry, owner, pkg.name, VERSION_SUFFIX);
         let path = cache_path()?.join(file_name);
 
         Ok(Self { path, version })
@@ -79,7 +77,7 @@ mod tests {
         let pkg = Package::new("repo");
         let version_file1 = VersionFile::new("myreg", &pkg, "0.1.0").unwrap();
         let version_file2 = VersionFile {
-            path: cache_path().unwrap().join("myreg_repo-latest-version"),
+            path: cache_path().unwrap().join("myreg-repo-latest-version"),
             version: "0.1.0",
         };
 
