@@ -33,6 +33,8 @@ fn get_base_url() -> String {
 }
 
 impl Registry for Crates {
+    const NAME: &'static str = "crates";
+
     fn get_latest_version(pkg: &Package, timeout: Duration) -> Result<Option<String>, Error> {
         let url = format!("{}/{}/versions", get_base_url(), pkg);
 

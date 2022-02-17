@@ -10,6 +10,9 @@ mod github;
 mod pypi;
 
 pub trait Registry {
+    /// The name of the registry.
+    const NAME: &'static str;
+
     /// Gets the latest version of a package from the registry.
     ///
     /// # Arguments

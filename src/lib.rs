@@ -4,7 +4,7 @@
 //! ## Benefits
 //! * Support of [`Crates.io`], [`GitHub`] and [`PyPI`].
 //! * Configurable check frequency and request timeout.
-//! * Minimum dependencies - only [`ureq`], [`semver`] and [`serde`].
+//! * Minimum dependencies - only [`directories`], [`ureq`], [`semver`] and [`serde`].
 //!
 //! ## Usage
 //!
@@ -131,6 +131,7 @@
 //! [`Crates.io`]: https://crates.io
 //! [`GitHub`]: https://github.com
 //! [`PyPI`]: https://pypi.org
+//! [`directories`]: https://github.com/dirs-dev/directories-rs
 //! [`ureq`]: https://github.com/algesten/ureq
 //! [`semver`]: https://github.com/dtolnay/semver
 //! [`serde`]: https://github.com/serde-rs/serde
@@ -256,7 +257,7 @@ impl<R: Registry, N: AsRef<str>, V: AsRef<str>> Check for UpdateInformer<R, N, V
     /// ```
     fn check_version(&self) -> Result<Option<Version>, Error> {
         let pkg = Package::new(self.name.as_ref());
-        let latest_version_file = VersionFile::new(&pkg, self.version.as_ref());
+        let latest_version_file = VersionFile::new(R::NAME, &pkg, self.version.as_ref())?;
         let last_modified = latest_version_file.last_modified()?;
 
         let latest_version = if last_modified >= self.interval {

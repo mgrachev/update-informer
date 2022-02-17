@@ -11,7 +11,7 @@ It checks for a new version on Crates.io, GitHub and PyPI 🚀
 ## Benefits
 * Support of **Crates.io**, **GitHub** and **PyPI**.
 * Configurable **check frequency** and **request timeout**.
-* **Minimum dependencies** - only [ureq](https://github.com/algesten/ureq), [semver](https://github.com/dtolnay/semver) and [serde](https://github.com/serde-rs/serde).
+* **Minimum dependencies** - only [directories](https://github.com/dirs-dev/directories-rs), [ureq](https://github.com/algesten/ureq), [semver](https://github.com/dtolnay/semver) and [serde](https://github.com/serde-rs/serde).
 
 The idea is actually not new, as GitHub has been doing for a long time in its [CLI application](https://cli.github.com).<br>
 There is also a popular [JavaScript library](https://github.com/yeoman/update-notifier).

@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### ⚙️ Changed
 - Add more examples [#23](https://github.com/mgrachev/update-informer/pull/23)
+- Use more platform-suitable location for version files, and with less chance of conflict between different users of the library [#21](https://github.com/mgrachev/update-informer/pull/21) ([@itamarst](https://github.com/itamarst))
 
 ### 🛠 Fixed
 
