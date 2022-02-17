@@ -131,6 +131,7 @@
 //! [`Crates.io`]: https://crates.io
 //! [`GitHub`]: https://github.com
 //! [`PyPI`]: https://pypi.org
+//! [`directories`]: https://github.com/dirs-dev/directories-rs
 //! [`ureq`]: https://github.com/algesten/ureq
 //! [`semver`]: https://github.com/dtolnay/semver
 //! [`serde`]: https://github.com/serde-rs/serde
