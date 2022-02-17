@@ -2,8 +2,8 @@ use std::fmt::{Display, Formatter};
 
 #[derive(Debug, PartialEq)]
 pub struct Package<'a> {
-    pub(crate) owner: Option<&'a str>,
-    pub(crate) name: &'a str,
+    owner: Option<&'a str>,
+    name: &'a str,
 }
 
 impl<'a> Package<'a> {
@@ -22,12 +22,8 @@ impl<'a> Package<'a> {
 
     /// Return a name suitable for storing on filesystem, that will include
     /// owner if it is set.
-    pub(crate) fn extended_name(&self) -> String {
-        let owner = if let Some(owner) = self.owner {
-            format!("{}-", owner)
-        } else {
-            "".to_string()
-        };
+    pub(crate) fn name(&self) -> String {
+        let owner = self.owner.map(|s| format!("{}-", s)).unwrap_or_default();
         format!("{}{}", owner, self.name)
     }
 }
@@ -55,7 +51,7 @@ mod tests {
         };
 
         assert_eq!(pkg1, pkg2);
-        assert_eq!(pkg1.extended_name(), "repo".to_string())
+        assert_eq!(pkg1.name(), "repo".to_string())
     }
 
     #[test]
@@ -67,7 +63,7 @@ mod tests {
         };
 
         assert_eq!(pkg1, pkg2);
-        assert_eq!(pkg1.extended_name(), "owner-repo".to_string())
+        assert_eq!(pkg1.name(), "owner-repo".to_string())
     }
 
     #[test]

@@ -12,7 +12,7 @@ pub(crate) struct VersionFile<'a> {
 
 impl<'a> VersionFile<'a> {
     pub(crate) fn new(registry: &str, pkg: &Package, version: &'a str) -> Result<Self, Error> {
-        let file_name = format!("{}-{}", registry, pkg.extended_name());
+        let file_name = format!("{}-{}", registry, pkg.name());
         let path = cache_path()?.join(file_name);
 
         Ok(Self { path, version })
@@ -49,7 +49,7 @@ impl<'a> VersionFile<'a> {
 #[cfg(not(test))]
 fn cache_path() -> Result<PathBuf, Error> {
     let project_dir = directories::ProjectDirs::from("", "", "update-informer-rs")
-        .map_or(Err("Unable to find cache directory"), Ok)?;
+        .ok_or("Unable to find cache directory")?;
     let directory = project_dir.cache_dir().to_path_buf();
     fs::create_dir_all(&directory)?;
     Ok(directory)
@@ -80,8 +80,8 @@ mod tests {
     #[test]
     fn create_version_file_twice_test() {
         let pkg = Package::new("repo");
-        let version_file1 = VersionFile::new("reg", &pkg, "0.1.0").unwrap();
-        let version_file2 = VersionFile::new("reg", &pkg, "0.1.0").unwrap();
+        let version_file1 = VersionFile::new("reg", &pkg, "0.1.0").expect("create version file");
+        let version_file2 = VersionFile::new("reg", &pkg, "0.1.0").expect("create version file");
         assert_eq!(version_file1, version_file2);
     }
 
