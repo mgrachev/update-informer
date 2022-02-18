@@ -1,6 +1,6 @@
 [package]
 name = "update-informer"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 authors = ["Mikhail Grachev <work@mgrachev.com>"]
 description = "Update informer for CLI applications"
@@ -20,3 +20,9 @@ ureq = { version = "2.4", features = ["json"] }
 [dev-dependencies]
 mockito = "0.30.0"
 once_cell = "1.9.0"
+
+[features]
+default = ["crates"]
+crates = []
+github = []
+pypi = []

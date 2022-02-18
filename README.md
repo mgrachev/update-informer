@@ -1,4 +1,19 @@
-# Update-informer [![CI](https://github.com/mgrachev/update-informer/workflows/CI/badge.svg)](https://github.com/mgrachev/update-informer/actions) [![Crates.io](https://img.shields.io/crates/v/update-informer)](https://crates.io/crates/update-informer) [![docs.rs](https://img.shields.io/docsrs/update-informer)](https://docs.rs/update-informer) [![codecov](https://codecov.io/gh/mgrachev/update-informer/branch/main/graph/badge.svg?token=A4XD1DGFGJ)](https://codecov.io/gh/mgrachev/update-informer)
+# Update-informer [![CI]](https://github.com/mgrachev/update-informer/actions) [![Crates.io]](https://crates.io/crates/update-informer) [![docs.rs]](https://docs.rs/update-informer) [![codecov]](https://codecov.io/gh/mgrachev/update-informer)
+
+[CI]: https://github.com/mgrachev/update-informer/workflows/CI/badge.svg
+[Crates.io]: https://img.shields.io/crates/v/update-informer
+[docs.rs]: https://img.shields.io/docsrs/update-informer
+[codecov]: https://codecov.io/gh/mgrachev/update-informer/branch/main/graph/badge.svg?token=A4XD1DGFGJ
+
+[directories]: https://github.com/dirs-dev/directories-rs
+[ureq]: https://github.com/algesten/ureq
+[semver]: https://github.com/dtolnay/semver
+[serde]: https://github.com/serde-rs/serde
+[CLI application]: https://cli.github.com
+[JavaScript library]: https://github.com/yeoman/update-notifier
+[Update-informer]: https://evrone.com/update-informer?utm_source=github&utm_campaign=update-informer
+[Evrone]: https://evrone.com/?utm_source=github&utm_campaign=update-informer
+[MIT]: https://choosealicense.com/licenses/mit
 
 <img align="right"
      alt="update-informer"
@@ -11,12 +26,12 @@ It checks for a new version on Crates.io, GitHub and PyPI 🚀
 ## Benefits
 * Support of **Crates.io**, **GitHub** and **PyPI**.
 * Configurable **check frequency** and **request timeout**.
-* **Minimum dependencies** - only [directories](https://github.com/dirs-dev/directories-rs), [ureq](https://github.com/algesten/ureq), [semver](https://github.com/dtolnay/semver) and [serde](https://github.com/serde-rs/serde).
+* **Minimum dependencies** - only [directories], [ureq], [semver] and [serde].
 
-The idea is actually not new, as GitHub has been doing for a long time in its [CLI application](https://cli.github.com).<br>
-There is also a popular [JavaScript library](https://github.com/yeoman/update-notifier).
+The idea is actually not new, as GitHub has been doing for a long time in its [CLI application].<br>
+There is also a popular [JavaScript library].
 
-[Update-informer](https://evrone.com/update-informer?utm_source=github&utm_campaign=update-informer) is created & supported by [Evrone](https://evrone.com/?utm_source=github&utm_campaign=update-informer).
+[Update-informer] is created & supported by [Evrone].
 
 ## Usage
 
@@ -24,8 +39,24 @@ Add `update-informer` to `Cargo.toml`:
 
 ```toml
 [dependencies]
-update-informer = "0.2.0"
+update-informer = "0.3.0"
 ```
+
+By default, `update-informer` can only check on Crates.io.
+To enable support for other registries, use `features`:
+
+```toml
+[dependencies]
+update-informer = { version = "0.3.0", default_features = false, features = ["github"] }
+```
+
+Available features:
+
+Name | Default?
+---|---
+cargo | Yes
+github | No
+pypi | No
 
 ## Crates.io
 
@@ -199,4 +230,4 @@ informer.check_version();
 
 ## License
 
-[MIT](https://choosealicense.com/licenses/mit)
+[MIT]

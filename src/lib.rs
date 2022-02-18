@@ -8,6 +8,24 @@
 //!
 //! ## Usage
 //!
+//! By default, `update-informer` can only check on [`Crates.io`].
+//! To enable support for other registries, use `features`:
+//!
+//! ```toml
+//! [dependencies]
+//! update-informer = { version = "0.3.0", default_features = false, features = ["github"] }
+//! ```
+//!
+//! Available features:
+//!
+//! Name | Default?
+//! ---|---
+//! cargo | Yes
+//! github | No
+//! pypi | No
+//!
+//! ## Crates.io
+//!
 //! To check for a new version on Crates.io, use the [`UpdateInformer::check_version`] function. This function takes the project name and current version:
 //!
 //! ```rust
