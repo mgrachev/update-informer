@@ -1,12 +1,22 @@
 use crate::{Error, Package};
 use std::time::Duration;
 
+#[cfg(feature = "crates")]
 pub use crates::Crates;
+
+#[cfg(feature = "github")]
 pub use github::GitHub;
+
+#[cfg(feature = "pypi")]
 pub use pypi::PyPI;
 
+#[cfg(feature = "crates")]
 mod crates;
+
+#[cfg(feature = "github")]
 mod github;
+
+#[cfg(feature = "pypi")]
 mod pypi;
 
 pub trait Registry {

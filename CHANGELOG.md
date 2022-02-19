@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### 🚀 Added
+
+### ⚙️ Changed
+
+### 🛠 Fixed
+
+## [v0.3.0] - 2022-02-19
+### 🚀 Added
+- Add cargo features [#26](https://github.com/mgrachev/update-informer/pull/26)
 - Add configurable request timeout and interval [#24](https://github.com/mgrachev/update-informer/pull/24)
 - Add PyPI support [#16](https://github.com/mgrachev/update-informer/pull/16) ([@itamarst](https://github.com/itamarst))
 - Add logo [#19](https://github.com/mgrachev/update-informer/pull/19)
@@ -31,5 +39,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Check updates on GitHub [#8](https://github.com/mgrachev/update-informer/pull/8)
 - Check updates on Crates.io [#1](https://github.com/mgrachev/update-informer/pull/1)
 
+[v0.3.0]: https://github.com/mgrachev/update-informer/releases/tag/v0.3.0
 [v0.2.0]: https://github.com/mgrachev/update-informer/releases/tag/v0.2.0
 [v0.1.0]: https://github.com/mgrachev/update-informer/releases/tag/v0.1.0
