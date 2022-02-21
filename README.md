@@ -39,7 +39,7 @@ Add `update-informer` to `Cargo.toml`:
 
 ```toml
 [dependencies]
-update-informer = "0.3.0"
+update-informer = "0.4.0"
 ```
 
 By default, `update-informer` can only check on Crates.io.
@@ -47,7 +47,7 @@ To enable support for other registries, use `features`:
 
 ```toml
 [dependencies]
-update-informer = { version = "0.3.0", default_features = false, features = ["github"] }
+update-informer = { version = "0.4.0", default_features = false, features = ["github"] }
 ```
 
 Available features:
@@ -95,6 +95,20 @@ const EVERY_HOUR: Duration = Duration::from_secs(60 * 60);
 
 let informer = UpdateInformer::new(Crates, "crate_name", "0.1.0").interval(EVERY_HOUR);
 informer.check_version(); // The check will start only after an hour
+```
+
+## Cache file
+
+By default, `update-informer` creates a file in the cache directory to avoid spam requests to the registry API.
+
+In order not to cache requests, use a zero interval:
+
+```rust
+use std::time::Duration;
+use update_informer::{registry::Crates, Check, UpdateInformer};
+
+let informer = UpdateInformer::new(Crates, "crate_name", "0.1.0").interval(Duration::ZERO);
+informer.check_version();
 ```
 
 ## Request timeout

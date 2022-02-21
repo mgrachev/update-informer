@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 🛠 Fixed
 
+## [v0.4.0] - 2022-02-21
+### 🚀 Added
+- Add ability to not use cache files [#27](https://github.com/mgrachev/update-informer/pull/27)
+
 ## [v0.3.0] - 2022-02-19
 ### 🚀 Added
 - Add cargo features [#26](https://github.com/mgrachev/update-informer/pull/26)
@@ -39,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Check updates on GitHub [#8](https://github.com/mgrachev/update-informer/pull/8)
 - Check updates on Crates.io [#1](https://github.com/mgrachev/update-informer/pull/1)
 
+[v0.4.0]: https://github.com/mgrachev/update-informer/releases/tag/v0.4.0
 [v0.3.0]: https://github.com/mgrachev/update-informer/releases/tag/v0.3.0
 [v0.2.0]: https://github.com/mgrachev/update-informer/releases/tag/v0.2.0
 [v0.1.0]: https://github.com/mgrachev/update-informer/releases/tag/v0.1.0
