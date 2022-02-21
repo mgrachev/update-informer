@@ -23,7 +23,7 @@ impl<'a> VersionFile<'a> {
             Ok(meta) => meta,
             Err(e) if e.kind() == ErrorKind::NotFound => {
                 self.write_version(&self.version)?;
-                return Ok(Duration::default());
+                return Ok(Duration::ZERO);
             }
             Err(e) => return Err(e.into()),
         };

@@ -9,7 +9,7 @@ static LOCK: Lazy<Mutex<()>> = once_cell::sync::Lazy::new(|| Mutex::default());
 
 pub(crate) fn within_test_dir(f: fn(path: PathBuf)) {
     // To avoid problems when working in parallel with the file system
-    let _m = LOCK.lock().expect("unlock mutex");
+    let mutex = LOCK.lock().expect("unlock mutex");
 
     let test_dir: PathBuf = std::env::temp_dir().join("update-informer-test");
     fs::create_dir_all(&test_dir).expect("create test dir");
@@ -25,7 +25,7 @@ pub(crate) fn within_test_dir(f: fn(path: PathBuf)) {
     if let Err(e) = result {
         // If we panic while holding the mutex, it becomes poisoned, and future
         // tests fail in a unexpected way. So release lock before the panic.
-        drop(_m);
+        drop(mutex);
         panic::resume_unwind(e);
     }
 }
@@ -37,6 +37,7 @@ pub(crate) fn mock_crates(pkg: &Package, status: usize, data_path: &str) -> (Moc
     (mock_http(&mock_path, status, &data), data)
 }
 
+#[cfg(feature = "github")]
 pub(crate) fn mock_github(pkg: &Package, status: usize, data_path: &str) -> (Mock, String) {
     let mock_path = format!("/repos/{}/releases/latest", pkg);
     let data = fs::read_to_string(data_path).expect("read file to string");
@@ -44,12 +45,14 @@ pub(crate) fn mock_github(pkg: &Package, status: usize, data_path: &str) -> (Moc
     (mock_http(&mock_path, status, &data), data)
 }
 
+#[cfg(feature = "pypi")]
 pub(crate) fn mock_pypi(pkg: &Package, status: usize, data_path: &str) -> (Mock, String) {
     let mock_path = format!("/pypi/{}/json", pkg);
     let data = fs::read_to_string(data_path).expect("read file to string");
 
     (mock_http(&mock_path, status, &data), data)
 }
+
 pub(crate) fn mock_http(path: &str, status: usize, body: &str) -> Mock {
     mock("GET", path)
         .with_status(status)

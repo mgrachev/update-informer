@@ -13,7 +13,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! update-informer = { version = "0.3.0", default_features = false, features = ["github"] }
+//! update-informer = { version = "0.4.0", default_features = false, features = ["github"] }
 //! ```
 //!
 //! Available features:
@@ -61,6 +61,21 @@
 //! let informer = UpdateInformer::new(Crates, "crate_name", "0.1.0").interval(EVERY_HOUR);
 //! informer.check_version(); // The check will start only after an hour
 //! ```
+//!
+//! ## Cache file
+//!
+//! By default, `update-informer` creates a file in the cache directory to avoid spam requests to the registry API.
+//!
+//! In order not to cache requests, use a zero interval:
+//!
+//! ```rust
+//! use std::time::Duration;
+//! use update_informer::{registry::Crates, Check, UpdateInformer};
+//!
+//! let informer = UpdateInformer::new(Crates, "crate_name", "0.1.0").interval(Duration::ZERO);
+//! informer.check_version();
+//! ```
+//!
 //! ## Request timeout
 //!
 //! You can also change the request timeout. By default, it is 5 seconds:
@@ -275,22 +290,31 @@ impl<R: Registry, N: AsRef<str>, V: AsRef<str>> Check for UpdateInformer<R, N, V
     /// ```
     fn check_version(&self) -> Result<Option<Version>, Error> {
         let pkg = Package::new(self.name.as_ref());
-        let latest_version_file = VersionFile::new(R::NAME, &pkg, self.version.as_ref())?;
-        let last_modified = latest_version_file.last_modified()?;
 
-        let latest_version = if last_modified >= self.interval {
-            // This is needed to update mtime of the file
-            latest_version_file.recreate_file()?;
-
+        // If the interval is zero, don't use the cache file
+        let latest_version = if self.interval.is_zero() {
             match R::get_latest_version(&pkg, self.timeout)? {
-                Some(v) => {
-                    latest_version_file.write_version(&v)?;
-                    v
-                }
+                Some(v) => v,
                 None => return Ok(None),
             }
         } else {
-            latest_version_file.get_version()?
+            let latest_version_file = VersionFile::new(R::NAME, &pkg, self.version.as_ref())?;
+            let last_modified = latest_version_file.last_modified()?;
+
+            if last_modified >= self.interval {
+                // This is needed to update mtime of the file
+                latest_version_file.recreate_file()?;
+
+                match R::get_latest_version(&pkg, self.timeout)? {
+                    Some(v) => {
+                        latest_version_file.write_version(&v)?;
+                        v
+                    }
+                    None => return Ok(None),
+                }
+            } else {
+                latest_version_file.get_version()?
+            }
         };
 
         let latest_version = Version::parse(latest_version)?;
@@ -374,7 +398,7 @@ impl<V: AsRef<str>> Check for FakeUpdateInformer<V> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::registry::{Crates, GitHub};
+    use crate::registry::Crates;
     use crate::test_helper::within_test_dir;
     use mockito::Mock;
     use std::fs;
@@ -382,17 +406,6 @@ mod tests {
     const PKG_NAME: &str = "repo";
     const CURRENT_VERSION: &str = "3.1.0";
     const LATEST_VERSION: &str = "3.1.1";
-
-    fn mock_github(pkg: &str) -> Mock {
-        let pkg = Package::new(pkg);
-        let (mock, _) = crate::test_helper::mock_github(
-            &pkg,
-            200,
-            "tests/fixtures/registry/github/release.json",
-        );
-
-        mock
-    }
 
     fn mock_crates(pkg: &str) -> Mock {
         let pkg = Package::new(pkg);
@@ -421,7 +434,7 @@ mod tests {
         within_test_dir(|_| {
             let _mock = mock_crates(PKG_NAME);
             let informer =
-                UpdateInformer::new(Crates, PKG_NAME, LATEST_VERSION).interval(Duration::default());
+                UpdateInformer::new(Crates, PKG_NAME, LATEST_VERSION).interval(Duration::ZERO);
             let result = informer.check_version();
 
             assert!(result.is_ok());
@@ -430,25 +443,11 @@ mod tests {
     }
 
     #[test]
-    fn check_version_on_github_test() {
-        within_test_dir(|_| {
-            let _mock = mock_github("owner/repo");
-            let informer = UpdateInformer::new(GitHub, "owner/repo", CURRENT_VERSION)
-                .interval(Duration::default());
-            let result = informer.check_version();
-            let version = Version::parse(LATEST_VERSION).expect("parse version");
-
-            assert!(result.is_ok());
-            assert_eq!(result.unwrap(), Some(version));
-        });
-    }
-
-    #[test]
     fn check_version_on_crates_test() {
         within_test_dir(|_| {
             let _mock = mock_crates(PKG_NAME);
-            let informer = UpdateInformer::new(Crates, PKG_NAME, CURRENT_VERSION)
-                .interval(Duration::default());
+            let informer =
+                UpdateInformer::new(Crates, PKG_NAME, CURRENT_VERSION).interval(Duration::ZERO);
             let result = informer.check_version();
             let version = Version::parse(LATEST_VERSION).expect("parse version");
 
@@ -483,6 +482,21 @@ mod tests {
 
             let version = fs::read_to_string(version_file).expect("read file");
             assert_eq!(version, CURRENT_VERSION);
+        });
+    }
+
+    #[test]
+    fn do_not_create_version_file_test() {
+        within_test_dir(|version_file| {
+            assert!(!version_file.exists());
+
+            let _mock = mock_crates(PKG_NAME);
+            let informer =
+                UpdateInformer::new(Crates, PKG_NAME, CURRENT_VERSION).interval(Duration::ZERO);
+            let result = informer.check_version();
+
+            assert!(result.is_ok());
+            assert!(!version_file.exists());
         });
     }
 
@@ -523,7 +537,9 @@ mod tests {
     #[test]
     fn fake_check_version_test() {
         let version = "1.0.0";
-        let informer = FakeUpdateInformer::new(Crates, PKG_NAME, CURRENT_VERSION, version);
+        let informer = FakeUpdateInformer::new(Crates, PKG_NAME, CURRENT_VERSION, version)
+            .interval(Duration::ZERO)
+            .timeout(Duration::ZERO);
         let result = informer.check_version();
         let version = Version::parse(version).expect("parse version");
 
