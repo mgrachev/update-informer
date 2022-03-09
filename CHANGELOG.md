@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### 🚀 Added
+Add dependabot [#28](https://github.com/mgrachev/update-informer/pull/28)
 
 ### ⚙️ Changed
 
