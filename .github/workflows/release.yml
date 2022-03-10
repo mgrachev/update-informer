@@ -11,7 +11,7 @@ jobs:
   release-crate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
       - name: Build and publish to crates.io
         run: |
           cargo login ${{ secrets.CRATES_TOKEN }}
