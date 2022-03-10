@@ -5,6 +5,7 @@ edition = "2021"
 authors = ["Mikhail Grachev <work@mgrachev.com>"]
 description = "Update informer for CLI applications"
 homepage = "https://github.com/mgrachev/update-informer"
+repository = "https://github.com/mgrachev/update-informer"
 license = "MIT"
 readme = "README.md"
 
