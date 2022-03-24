@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 ### 🚀 Added
+
+### ⚙️ Changed
+
+### 🛠 Fixed
+
+## [v0.5.0] - 2022-03-24
+### 🚀 Added
+- Add ability to implement your own registry to check updates [#37]
 - Add `stale` action [#33]
 - Add dependabot [#28]
 
@@ -45,6 +53,7 @@ and this project adheres to [Semantic Versioning].
 - Check updates on GitHub [#8]
 - Check updates on Crates.io [#1]
 
+[#37]: https://github.com/mgrachev/update-informer/pull/37
 [#33]: https://github.com/mgrachev/update-informer/pull/33
 [#28]: https://github.com/mgrachev/update-informer/pull/28
 [#27]: https://github.com/mgrachev/update-informer/pull/27
@@ -64,6 +73,7 @@ and this project adheres to [Semantic Versioning].
 [#8]: https://github.com/mgrachev/update-informer/pull/8
 [#1]: https://github.com/mgrachev/update-informer/pull/1
 
+[v0.5.0]: https://github.com/mgrachev/update-informer/releases/tag/v0.5.0
 [v0.4.0]: https://github.com/mgrachev/update-informer/releases/tag/v0.4.0
 [v0.3.0]: https://github.com/mgrachev/update-informer/releases/tag/v0.3.0
 [v0.2.0]: https://github.com/mgrachev/update-informer/releases/tag/v0.2.0

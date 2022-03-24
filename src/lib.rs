@@ -2,8 +2,9 @@
 //! Update informer for CLI applications written in Rust. It checks for a new version on [`Crates.io`], [`GitHub`] and [`PyPI`].
 //!
 //! ## Benefits
-//! * Support of [`Crates.io`], [`GitHub`] and [`PyPI`].
-//! * Configurable check frequency and request timeout.
+//! * Support of [Crates.io](#cratesio), [GitHub](#github) and [PyPI](#pypi).
+//! * [Ability to implement your own registry to check updates](#implementing-your-own-registry).
+//! * Configurable [check frequency](#interval) and [request timeout](#request-timeout).
 //! * Minimum dependencies - only [`directories`], [`ureq`], [`semver`] and [`serde`].
 //!
 //! ## Usage
@@ -13,25 +14,25 @@
 //!
 //! ```toml
 //! [dependencies]
-//! update-informer = { version = "0.4.0", default_features = false, features = ["github"] }
+//! update-informer = { version = "0.5.0", default_features = false, features = ["github"] }
 //! ```
 //!
 //! Available features:
 //!
-//! Name | Default?
-//! ---|---
-//! cargo | Yes
-//! github | No
-//! pypi | No
+//! | Name   | Default? |
+//! |--------|----------|
+//! | cargo  | Yes      |
+//! | github | No       |
+//! | pypi   | No       |
 //!
 //! ## Crates.io
 //!
 //! To check for a new version on Crates.io, use the [`UpdateInformer::check_version`] function. This function takes the project name and current version:
 //!
 //! ```rust
-//! use update_informer::{registry::Crates, Check, UpdateInformer};
+//! use update_informer::{registry, Check};
 //!
-//! let informer = UpdateInformer::new(Crates, "crate_name", "0.1.0");
+//! let informer = update_informer::new(registry::Crates, "crate_name", "0.1.0");
 //! if let Ok(Some(version)) = informer.check_version() {
 //!     println!("New version is available: {}", version);
 //! }
@@ -40,11 +41,11 @@
 //! Also, you can take the name and version of the project from `Cargo` using environment variables:
 //!
 //! ```rust
-//! use update_informer::{registry::Crates, Check, UpdateInformer};
+//! use update_informer::{registry, Check};
 //!
 //! let name = env!("CARGO_PKG_NAME");
 //! let version = env!("CARGO_PKG_VERSION");
-//! UpdateInformer::new(Crates, name, version).check_version();
+//! update_informer::new(registry::Crates, name, version).check_version();
 //! ```
 //!
 //! ## Interval
@@ -54,11 +55,11 @@
 //!
 //! ```rust
 //! use std::time::Duration;
-//! use update_informer::{registry::Crates, Check, UpdateInformer};
+//! use update_informer::{registry, Check};
 //!
 //! const EVERY_HOUR: Duration = Duration::from_secs(60 * 60);
 //!
-//! let informer = UpdateInformer::new(Crates, "crate_name", "0.1.0").interval(EVERY_HOUR);
+//! let informer = update_informer::new(registry::Crates, "crate_name", "0.1.0").interval(EVERY_HOUR);
 //! informer.check_version(); // The check will start only after an hour
 //! ```
 //!
@@ -70,9 +71,9 @@
 //!
 //! ```rust
 //! use std::time::Duration;
-//! use update_informer::{registry::Crates, Check, UpdateInformer};
+//! use update_informer::{registry, Check};
 //!
-//! let informer = UpdateInformer::new(Crates, "crate_name", "0.1.0").interval(Duration::ZERO);
+//! let informer = update_informer::new(registry::Crates, "crate_name", "0.1.0").interval(Duration::ZERO);
 //! informer.check_version();
 //! ```
 //!
@@ -82,11 +83,11 @@
 //!
 //! ```rust
 //! use std::time::Duration;
-//! use update_informer::{registry::Crates, Check, UpdateInformer};
+//! use update_informer::{registry, Check};
 //!
 //! const THIRTY_SECONDS: Duration = Duration::from_secs(30);
 //!
-//! let informer = UpdateInformer::new(Crates, "crate_name", "0.1.0").timeout(THIRTY_SECONDS);
+//! let informer = update_informer::new(registry::Crates, "crate_name", "0.1.0").timeout(THIRTY_SECONDS);
 //! informer.check_version();
 //! ```
 //!
@@ -95,9 +96,9 @@
 //! To check for a new version on GitHub (note that the project name must contain the owner):
 //!
 //! ```rust
-//! use update_informer::{registry::GitHub, Check, UpdateInformer};
+//! use update_informer::{registry, Check};
 //!
-//! let informer = UpdateInformer::new(GitHub, "owner/repo", "0.1.0");
+//! let informer = update_informer::new(registry::GitHub, "owner/repo", "0.1.0");
 //! informer.check_version();
 //! ```
 //!
@@ -106,9 +107,35 @@
 //! To check for a new version on PyPI:
 //!
 //! ```rust
-//! use update_informer::{registry::PyPI, Check, UpdateInformer};
+//! use update_informer::{registry, Check};
 //!
-//! let informer = UpdateInformer::new(PyPI, "package_name", "0.1.0");
+//! let informer = update_informer::new(registry::PyPI, "package_name", "0.1.0");
+//! informer.check_version();
+//! ```
+//!
+//! ## Implementing your own registry
+//!
+//! You can implement your own registry to check updates. For example:
+//!
+//! ```rust
+//! use std::time::Duration;
+//! use update_informer::{registry, Check, Package, Registry, Result};
+//!
+//! struct YourOwnRegistry;
+//!
+//! impl Registry for YourOwnRegistry {
+//!     const NAME: &'static str = "your_own_registry";
+//!
+//!     fn get_latest_version(pkg: &Package, _timeout: Duration) -> Result<Option<String>> {
+//!         let url = format!("https://your_own_registry.com/{}/latest-version", pkg);
+//!         let result = reqwest::blocking::get(url)?.text()?;
+//!         let version = result.trim().to_string();
+//!
+//!         Ok(Some(version))
+//!     }
+//! }
+//!
+//! let informer = update_informer::new(YourOwnRegistry, "package_name", "0.1.0");
 //! informer.check_version();
 //! ```
 //!
@@ -119,16 +146,16 @@
 //! Example of usage in unit tests:
 //!
 //! ```rust
-//! use update_informer::{registry::Crates, Check, FakeUpdateInformer, UpdateInformer};
+//! use update_informer::{registry, Check};
 //!
 //! let name = "crate_name";
 //! let version = "0.1.0";
 //!
 //! #[cfg(not(test))]
-//! let informer = UpdateInformer::new(Crates, name, version);
+//! let informer = update_informer::new(registry::Crates, name, version);
 //!
 //! #[cfg(test)]
-//! let informer = FakeUpdateInformer::new(Crates, name, version, "1.0.0");
+//! let informer = update_informer::fake(registry::Crates, name, version, "1.0.0");
 //!
 //! if let Ok(Some(version)) = informer.check_version() {
 //!     println!("New version is available: {}", version);
@@ -147,16 +174,16 @@
 //! Then use this feature flag in your code and integration tests:
 //!
 //! ```rust
-//! use update_informer::{registry::Crates, Check, FakeUpdateInformer, UpdateInformer};
+//! use update_informer::{registry, Check};
 //!
 //! let name = "crate_name";
 //! let version = "0.1.0";
 //!
 //! #[cfg(not(feature = "stub_check_version"))]
-//! let informer = UpdateInformer::new(Crates, name, version);
+//! let informer = update_informer::new(registry::Crates, name, version);
 //!
 //! #[cfg(feature = "stub_check_version")]
-//! let informer = FakeUpdateInformer::new(Crates, name, version, "1.0.0");
+//! let informer = update_informer::fake(Crates, name, version, "1.0.0");
 //!
 //! informer.check_version();
 //! ```
@@ -169,11 +196,12 @@
 //! [`semver`]: https://github.com/dtolnay/semver
 //! [`serde`]: https://github.com/serde-rs/serde
 
-use crate::package::Package;
-use crate::registry::Registry;
-use crate::version::Version;
-use crate::version_file::VersionFile;
+#[doc = include_str!("../README.md")]
+use crate::{version::Version, version_file::VersionFile};
 use std::time::Duration;
+
+pub use package::Package;
+pub use registry::Registry;
 
 mod http;
 mod package;
@@ -187,21 +215,54 @@ mod test_helper;
 pub mod registry;
 
 type Error = Box<dyn std::error::Error>;
+pub type Result<T> = std::result::Result<T, Error>;
 
 pub trait Check {
     /// Checks for a new version in the registry.
-    fn check_version(&self) -> Result<Option<Version>, Error> {
+    fn check_version(&self) -> Result<Option<Version>> {
         Ok(None)
     }
 }
 
-/// Checks for a new version on Crates.io, GitHub and PyPi
+/// Checks for a new version on Crates.io, GitHub and PyPi.
 pub struct UpdateInformer<R: Registry, N: AsRef<str>, V: AsRef<str>> {
     _registry: R,
     name: N,
     version: V,
     interval: Duration,
     timeout: Duration,
+}
+
+/// Constructs a new `UpdateInformer`.
+///
+/// # Arguments
+///
+/// * `registry` - A registry service such as Crates.io or GitHub.
+/// * `name` - A project name.
+/// * `version` - Current version of the project.
+///
+/// # Examples
+///
+/// ```rust
+/// use update_informer::{registry, Check};
+///
+/// let name = env!("CARGO_PKG_NAME");
+/// let version = env!("CARGO_PKG_VERSION");
+/// let informer = update_informer::new(registry::Crates, name, version);
+/// ```
+pub fn new<R, N, V>(registry: R, name: N, version: V) -> UpdateInformer<R, N, V>
+where
+    R: Registry,
+    N: AsRef<str>,
+    V: AsRef<str>,
+{
+    UpdateInformer {
+        _registry: registry,
+        name,
+        version,
+        interval: Duration::from_secs(60 * 60 * 24), // Once a day
+        timeout: Duration::from_secs(5),
+    }
 }
 
 impl<R: Registry, N: AsRef<str>, V: AsRef<str>> UpdateInformer<R, N, V> {
@@ -216,20 +277,15 @@ impl<R: Registry, N: AsRef<str>, V: AsRef<str>> UpdateInformer<R, N, V> {
     /// # Examples
     ///
     /// ```rust
-    /// use update_informer::{registry::Crates, Check, UpdateInformer};
+    /// use update_informer::{registry, Check, UpdateInformer};
     ///
     /// let name = env!("CARGO_PKG_NAME");
     /// let version = env!("CARGO_PKG_VERSION");
-    /// let informer = UpdateInformer::new(Crates, name, version);
+    /// let informer = UpdateInformer::new(registry::Crates, name, version);
     /// ```
+    #[deprecated(since = "0.5.0", note = "Use `update_informer::new` instead")]
     pub fn new(registry: R, name: N, version: V) -> Self {
-        Self {
-            _registry: registry,
-            name,
-            version,
-            interval: Duration::from_secs(60 * 60 * 24), // Once a day
-            timeout: Duration::from_secs(5),
-        }
+        crate::new(registry, name, version)
     }
 
     /// Sets an interval how often to check for a new version.
@@ -242,11 +298,11 @@ impl<R: Registry, N: AsRef<str>, V: AsRef<str>> UpdateInformer<R, N, V> {
     ///
     /// ```rust
     /// use std::time::Duration;
-    /// use update_informer::{registry::Crates, Check, UpdateInformer};
+    /// use update_informer::{registry, Check};
     ///
     /// const EVERY_HOUR: Duration = Duration::from_secs(60 * 60);
     ///
-    /// let informer = UpdateInformer::new(Crates, "crate_name", "0.1.0").interval(EVERY_HOUR);
+    /// let informer = update_informer::new(registry::Crates, "crate_name", "0.1.0").interval(EVERY_HOUR);
     /// informer.check_version(); // The check will start only after an hour
     /// ```
     pub fn interval(self, interval: Duration) -> Self {
@@ -263,11 +319,11 @@ impl<R: Registry, N: AsRef<str>, V: AsRef<str>> UpdateInformer<R, N, V> {
     ///
     /// ```rust
     /// use std::time::Duration;
-    /// use update_informer::{registry::Crates, Check, UpdateInformer};
+    /// use update_informer::{registry, Check};
     ///
     /// const THIRTY_SECONDS: Duration = Duration::from_secs(30);
     ///
-    /// let informer = UpdateInformer::new(Crates, "crate_name", "0.1.0").timeout(THIRTY_SECONDS);
+    /// let informer = update_informer::new(registry::Crates, "crate_name", "0.1.0").timeout(THIRTY_SECONDS);
     /// informer.check_version();
     /// ```
     pub fn timeout(self, timeout: Duration) -> Self {
@@ -283,12 +339,12 @@ impl<R: Registry, N: AsRef<str>, V: AsRef<str>> Check for UpdateInformer<R, N, V
     /// To check for a new version on Crates.io:
     ///
     /// ```rust
-    /// use update_informer::{registry::Crates, Check, UpdateInformer};
+    /// use update_informer::{registry, Check};
     ///
-    /// let informer = UpdateInformer::new(Crates, "crate_name", "0.1.0");
+    /// let informer = update_informer::new(registry::Crates, "crate_name", "0.1.0");
     /// informer.check_version();
     /// ```
-    fn check_version(&self) -> Result<Option<Version>, Error> {
+    fn check_version(&self) -> Result<Option<Version>> {
         let pkg = Package::new(self.name.as_ref());
 
         // If the interval is zero, don't use the cache file
@@ -319,6 +375,7 @@ impl<R: Registry, N: AsRef<str>, V: AsRef<str>> Check for UpdateInformer<R, N, V
 
         let latest_version = Version::parse(latest_version)?;
         let current_version = Version::parse(self.version.as_ref())?;
+
         if latest_version > current_version {
             return Ok(Some(latest_version));
         }
@@ -330,6 +387,34 @@ impl<R: Registry, N: AsRef<str>, V: AsRef<str>> Check for UpdateInformer<R, N, V
 /// Fake `UpdateInformer`. Used only for tests.
 pub struct FakeUpdateInformer<V: AsRef<str>> {
     version: V,
+}
+
+/// Constructs a new `FakeUpdateInformer`.
+///
+/// # Arguments
+///
+/// * `registry` - A registry service such as Crates.io or GitHub (not used).
+/// * `name` - A project name (not used).
+/// * `version` - Current version of the project (not used).
+/// * `interval` - An interval how often to check for a new version (not used).
+/// * `new_version` - A desired version.
+///
+/// # Examples
+///
+/// ```rust
+/// use update_informer::{registry, Check};
+///
+/// let informer = update_informer::fake(registry::Crates, "repo", "0.1.0", "1.0.0");
+/// ```
+pub fn fake<R, N, V>(_registry: R, _name: N, _version: V, new_version: V) -> FakeUpdateInformer<V>
+where
+    R: Registry,
+    N: AsRef<str>,
+    V: AsRef<str>,
+{
+    FakeUpdateInformer {
+        version: new_version,
+    }
 }
 
 impl<V: AsRef<str>> FakeUpdateInformer<V> {
@@ -346,19 +431,18 @@ impl<V: AsRef<str>> FakeUpdateInformer<V> {
     /// # Examples
     ///
     /// ```rust
-    /// use update_informer::{registry::Crates, Check, FakeUpdateInformer};
+    /// use update_informer::{registry, Check, FakeUpdateInformer};
     ///
-    /// let informer = FakeUpdateInformer::new(Crates, "repo", "0.1.0", "1.0.0");
+    /// let informer = FakeUpdateInformer::new(registry::Crates, "repo", "0.1.0", "1.0.0");
     /// ```
-    pub fn new<R, N>(_registry: R, _name: N, _version: V, new_version: V) -> Self
+    #[deprecated(since = "0.5.0", note = "Use `update_informer::fake` instead")]
+    pub fn new<R, N>(registry: R, name: N, version: V, new_version: V) -> Self
     where
         R: Registry,
         N: AsRef<str>,
         V: AsRef<str>,
     {
-        Self {
-            version: new_version,
-        }
+        crate::fake(registry, name, version, new_version)
     }
 
     /// Returns `FakeUpdateInformer`.
@@ -378,9 +462,9 @@ impl<V: AsRef<str>> Check for FakeUpdateInformer<V> {
     /// # Examples
     ///
     /// ```rust
-    /// use update_informer::{registry::Crates, Check, FakeUpdateInformer};
+    /// use update_informer::{registry, Check};
     ///
-    /// let informer = FakeUpdateInformer::new(Crates, "crate_name", "0.1.0", "1.0.0");
+    /// let informer = update_informer::fake(registry::Crates, "crate_name", "0.1.0", "1.0.0");
     /// let result = informer.check_version();
     /// assert!(result.is_ok());
     ///
@@ -388,7 +472,7 @@ impl<V: AsRef<str>> Check for FakeUpdateInformer<V> {
     /// assert!(version.is_some());
     /// assert_eq!(version.unwrap().to_string(), "v1.0.0");
     /// ```
-    fn check_version(&self) -> Result<Option<Version>, Error> {
+    fn check_version(&self) -> Result<Option<Version>> {
         let version = Version::parse(self.version.as_ref())?;
 
         Ok(Some(version))
@@ -398,8 +482,7 @@ impl<V: AsRef<str>> Check for FakeUpdateInformer<V> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::registry::Crates;
-    use crate::test_helper::within_test_dir;
+    use crate::{registry::Crates, test_helper::within_test_dir};
     use mockito::Mock;
     use std::fs;
 
@@ -421,7 +504,7 @@ mod tests {
     #[test]
     fn no_new_version_with_interval_test() {
         within_test_dir(|_| {
-            let informer = UpdateInformer::new(Crates, PKG_NAME, CURRENT_VERSION);
+            let informer = crate::new(Crates, PKG_NAME, CURRENT_VERSION);
             let result = informer.check_version();
 
             assert!(result.is_ok());
@@ -433,8 +516,7 @@ mod tests {
     fn no_new_version_on_registry_test() {
         within_test_dir(|_| {
             let _mock = mock_crates(PKG_NAME);
-            let informer =
-                UpdateInformer::new(Crates, PKG_NAME, LATEST_VERSION).interval(Duration::ZERO);
+            let informer = crate::new(Crates, PKG_NAME, LATEST_VERSION).interval(Duration::ZERO);
             let result = informer.check_version();
 
             assert!(result.is_ok());
@@ -446,8 +528,7 @@ mod tests {
     fn check_version_on_crates_test() {
         within_test_dir(|_| {
             let _mock = mock_crates(PKG_NAME);
-            let informer =
-                UpdateInformer::new(Crates, PKG_NAME, CURRENT_VERSION).interval(Duration::ZERO);
+            let informer = crate::new(Crates, PKG_NAME, CURRENT_VERSION).interval(Duration::ZERO);
             let result = informer.check_version();
             let version = Version::parse(LATEST_VERSION).expect("parse version");
 
@@ -461,7 +542,7 @@ mod tests {
         within_test_dir(|version_file| {
             fs::write(version_file, "4.0.0").expect("create file");
 
-            let informer = UpdateInformer::new(Crates, PKG_NAME, CURRENT_VERSION);
+            let informer = crate::new(Crates, PKG_NAME, CURRENT_VERSION);
             let result = informer.check_version();
             let version = Version::parse("4.0.0").expect("parse version");
 
@@ -475,7 +556,7 @@ mod tests {
         within_test_dir(|version_file| {
             assert!(!version_file.exists());
 
-            let informer = UpdateInformer::new(Crates, PKG_NAME, CURRENT_VERSION);
+            let informer = crate::new(Crates, PKG_NAME, CURRENT_VERSION);
             let result = informer.check_version();
             assert!(result.is_ok());
             assert!(version_file.exists());
@@ -491,8 +572,7 @@ mod tests {
             assert!(!version_file.exists());
 
             let _mock = mock_crates(PKG_NAME);
-            let informer =
-                UpdateInformer::new(Crates, PKG_NAME, CURRENT_VERSION).interval(Duration::ZERO);
+            let informer = crate::new(Crates, PKG_NAME, CURRENT_VERSION).interval(Duration::ZERO);
             let result = informer.check_version();
 
             assert!(result.is_ok());
@@ -504,7 +584,7 @@ mod tests {
     fn check_version_with_string_name_test() {
         within_test_dir(|_| {
             let pkg_name = format!("{}/{}", "owner", PKG_NAME);
-            let informer = UpdateInformer::new(Crates, pkg_name, CURRENT_VERSION);
+            let informer = crate::new(Crates, pkg_name, CURRENT_VERSION);
             let result = informer.check_version();
 
             assert!(result.is_ok());
@@ -515,7 +595,7 @@ mod tests {
     fn check_version_with_string_version_test() {
         within_test_dir(|_| {
             let version = String::from(CURRENT_VERSION);
-            let informer = UpdateInformer::new(Crates, PKG_NAME, version);
+            let informer = crate::new(Crates, PKG_NAME, version);
             let result = informer.check_version();
 
             assert!(result.is_ok());
@@ -527,7 +607,7 @@ mod tests {
         within_test_dir(|_| {
             let pkg_name = format!("{}/{}", "owner", PKG_NAME);
             let version = String::from(CURRENT_VERSION);
-            let informer = UpdateInformer::new(Crates, &pkg_name, &version);
+            let informer = crate::new(Crates, &pkg_name, &version);
             let result = informer.check_version();
 
             assert!(result.is_ok());
@@ -537,7 +617,7 @@ mod tests {
     #[test]
     fn fake_check_version_test() {
         let version = "1.0.0";
-        let informer = FakeUpdateInformer::new(Crates, PKG_NAME, CURRENT_VERSION, version)
+        let informer = crate::fake(Crates, PKG_NAME, CURRENT_VERSION, version)
             .interval(Duration::ZERO)
             .timeout(Duration::ZERO);
         let result = informer.check_version();

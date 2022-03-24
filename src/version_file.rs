@@ -1,8 +1,10 @@
-use crate::{Error, Package};
-use std::io::ErrorKind;
-use std::path::PathBuf;
-use std::time::Duration;
-use std::{fs, io};
+use crate::{Package, Result};
+use std::{
+    fs,
+    io::{self, ErrorKind},
+    path::PathBuf,
+    time::Duration,
+};
 
 #[derive(Debug, PartialEq)]
 pub(crate) struct VersionFile<'a> {
@@ -11,14 +13,14 @@ pub(crate) struct VersionFile<'a> {
 }
 
 impl<'a> VersionFile<'a> {
-    pub(crate) fn new(registry: &str, pkg: &Package, version: &'a str) -> Result<Self, Error> {
+    pub(crate) fn new(registry: &str, pkg: &Package, version: &'a str) -> Result<Self> {
         let file_name = format!("{}-{}", registry, pkg.name());
         let path = cache_path()?.join(file_name);
 
         Ok(Self { path, version })
     }
 
-    pub(crate) fn last_modified(&self) -> Result<Duration, Error> {
+    pub(crate) fn last_modified(&self) -> Result<Duration> {
         let metadata = match fs::metadata(&self.path) {
             Ok(meta) => meta,
             Err(e) if e.kind() == ErrorKind::NotFound => {
@@ -47,7 +49,7 @@ impl<'a> VersionFile<'a> {
 }
 
 #[cfg(not(test))]
-fn cache_path() -> Result<PathBuf, Error> {
+fn cache_path() -> Result<PathBuf> {
     let project_dir = directories::ProjectDirs::from("", "", "update-informer-rs")
         .ok_or("Unable to find cache directory")?;
     let directory = project_dir.cache_dir().to_path_buf();
@@ -56,7 +58,7 @@ fn cache_path() -> Result<PathBuf, Error> {
 }
 
 #[cfg(test)]
-fn cache_path() -> Result<PathBuf, Error> {
+fn cache_path() -> Result<PathBuf> {
     Ok(std::env::temp_dir().join("update-informer-test"))
 }
 

@@ -1,17 +1,16 @@
-use crate::Error;
-
+use crate::Result;
 use std::fmt::{Display, Formatter};
 
 #[derive(Debug, PartialEq, PartialOrd)]
 pub struct Version(semver::Version);
 
 impl Version {
-    pub(crate) fn parse<V: AsRef<str>>(value: V) -> Result<Self, Error> {
+    pub(crate) fn parse<V: AsRef<str>>(value: V) -> Result<Self> {
         let value = value.as_ref();
         let v = value.strip_prefix('v').unwrap_or(value);
         let version = semver::Version::parse(v)?;
 
-        Ok(Self { 0: version })
+        Ok(Self(version))
     }
 }
 
