@@ -25,6 +25,7 @@ It checks for a new version on Crates.io, GitHub and PyPI 🚀
 
 ## Benefits
 * Support of **Crates.io**, **GitHub** and **PyPI**.
+* Ability to **implement** your **own registry** to check updates.
 * Configurable **check frequency** and **request timeout**.
 * **Minimum dependencies** - only [directories], [ureq], [semver] and [serde].
 
@@ -39,7 +40,7 @@ Add `update-informer` to `Cargo.toml`:
 
 ```toml
 [dependencies]
-update-informer = "0.4.0"
+update-informer = "0.5.0"
 ```
 
 By default, `update-informer` can only check on Crates.io.
@@ -47,16 +48,16 @@ To enable support for other registries, use `features`:
 
 ```toml
 [dependencies]
-update-informer = { version = "0.4.0", default_features = false, features = ["github"] }
+update-informer = { version = "0.5.0", default_features = false, features = ["github"] }
 ```
 
 Available features:
 
-Name | Default?
----|---
-cargo | Yes
-github | No
-pypi | No
+| Name   | Default? |
+|--------|----------|
+| cargo  | Yes      |
+| github | No       |
+| pypi   | No       |
 
 ## Crates.io
 
@@ -64,9 +65,9 @@ To check for a new version on Crates.io, use the `UpdateInformer::check_version`
 This function takes the project name and current version as well as check interval:
 
 ```rust
-use update_informer::{registry::Crates, Check, UpdateInformer};
+use update_informer::{registry, Check};
 
-let informer = UpdateInformer::new(Crates, "crate_name", "0.1.0");
+let informer = update_informer::new(registry::Crates, "crate_name", "0.1.0");
 if let Ok(Some(version)) = informer.check_version() {
     println!("New version is available: {}", version);
 }
@@ -75,11 +76,11 @@ if let Ok(Some(version)) = informer.check_version() {
 Also, you can take the name and version of the project from `Cargo` using environment variables:
 
 ```rust
-use update_informer::{registry::Crates, Check, UpdateInformer};
+use update_informer::{registry, Check};
 
 let name = env!("CARGO_PKG_NAME");
 let version = env!("CARGO_PKG_VERSION");
-UpdateInformer::new(Crates, name, version).check_version();
+update_informer::new(registry::Crates, name, version).check_version();
 ```
 
 ## Interval
@@ -89,11 +90,11 @@ By default, the interval is 24 hours, but you can change it:
 
 ```rust
 use std::time::Duration;
-use update_informer::{registry::Crates, Check, UpdateInformer};
+use update_informer::{registry, Check};
 
 const EVERY_HOUR: Duration = Duration::from_secs(60 * 60);
 
-let informer = UpdateInformer::new(Crates, "crate_name", "0.1.0").interval(EVERY_HOUR);
+let informer = update_informer::new(registry::Crates, "crate_name", "0.1.0").interval(EVERY_HOUR);
 informer.check_version(); // The check will start only after an hour
 ```
 
@@ -105,9 +106,9 @@ In order not to cache requests, use a zero interval:
 
 ```rust
 use std::time::Duration;
-use update_informer::{registry::Crates, Check, UpdateInformer};
+use update_informer::{registry, Check};
 
-let informer = UpdateInformer::new(Crates, "crate_name", "0.1.0").interval(Duration::ZERO);
+let informer = update_informer::new(registry::Crates, "crate_name", "0.1.0").interval(Duration::ZERO);
 informer.check_version();
 ```
 
@@ -117,11 +118,11 @@ You can also change the request timeout. By default, it is 5 seconds:
 
  ```rust
  use std::time::Duration;
- use update_informer::{registry::Crates, Check, UpdateInformer};
+ use update_informer::{registry, Check};
 
  const THIRTY_SECONDS: Duration = Duration::from_secs(30);
 
- let informer = UpdateInformer::new(Crates, "crate_name", "0.1.0").timeout(THIRTY_SECONDS);
+ let informer = update_informer::new(registry::Crates, "crate_name", "0.1.0").timeout(THIRTY_SECONDS);
  informer.check_version();
  ```
 
@@ -130,9 +131,9 @@ You can also change the request timeout. By default, it is 5 seconds:
 To check for a new version on GitHub (note that the project name must contain the owner):
 
 ```rust
-use update_informer::{registry::GitHub, Check, UpdateInformer};
+use update_informer::{registry, Check};
 
-let informer = UpdateInformer::new(GitHub, "owner/repo", "0.1.0");
+let informer = update_informer::new(registry::GitHub, "owner/repo", "0.1.0");
 informer.check_version();
 ```
 
@@ -141,9 +142,35 @@ informer.check_version();
 To check for a new version on PyPI:
 
 ```rust
-use update_informer::{registry::PyPI, Check, UpdateInformer};
+use update_informer::{registry, Check};
 
-let informer = UpdateInformer::new(PyPI, "package_name", "0.1.0");
+let informer = update_informer::new(registry::PyPI, "package_name", "0.1.0");
+informer.check_version();
+```
+
+## Implementing your own registry
+
+You can implement your own registry to check updates. For example: 
+
+```rust
+use std::time::Duration;
+use update_informer::{registry, Check, Package, Registry, Result};
+
+struct YourOwnRegistry;
+
+impl Registry for YourOwnRegistry {
+    const NAME: &'static str = "your_own_registry";
+
+    fn get_latest_version(pkg: &Package, _timeout: Duration) -> Result<Option<String>> {
+        let url = format!("https://your_own_registry.com/{}/latest-version", pkg);
+        let result = reqwest::blocking::get(url)?.text()?;
+        let version = result.trim().to_string();
+
+        Ok(Some(version))
+    }
+}
+
+let informer = update_informer::new(YourOwnRegistry, "package_name", "0.1.0");
 informer.check_version();
 ```
 
@@ -151,18 +178,18 @@ informer.check_version();
 
 <details>
 <summary>
-A real example of using <code>update_informer</code> with <a href="https://github.com/mackwic/colored">colored</a> crate
+A real example of using <code>update_informer</code> with <a href="https://github.com/mackwic/colored">colored</a> crate.
 </summary>
 
 ```rust
 use colored::*;
-use update_informer::{registry::Crates, Check, UpdateInformer};
+use update_informer::{registry, Check};
 
 fn main() {
     let pkg_name = env!("CARGO_PKG_NAME");
     let current_version = env!("CARGO_PKG_VERSION");
 
-    let informer = UpdateInformer::new(Crates, pkg_name, current_version);
+    let informer = update_informer::new(registry::Crates, pkg_name, current_version);
     if let Ok(Some(version)) = informer.check_version() {
         let msg = format!(
             "A new release of {pkg_name} is available: v{current_version} -> {new_version}",
@@ -196,16 +223,16 @@ In order not to check for updates in tests, you can use the `FakeUpdateInformer:
 Example of usage in unit tests:
 
 ```rust
-use update_informer::{registry::Crates, Check, FakeUpdateInformer, UpdateInformer};
+use update_informer::{registry, Check};
 
 let name = "crate_name";
 let version = "0.1.0";
 
 #[cfg(not(test))]
-let informer = UpdateInformer::new(Crates, name, version);
+let informer = update_informer::new(registry::Crates, name, version);
 
 #[cfg(test)]
-let informer = FakeUpdateInformer::new(Crates, name, version, "1.0.0");
+let informer = update_informer::fake(registry::Crates, name, version, "1.0.0");
 
 if let Ok(Some(version)) = informer.check_version() {
     println!("New version is available: {}", version);
@@ -224,11 +251,16 @@ stub_check_version = []
 Then use this feature flag in your code and integration tests:
 
 ```rust
+use update_informer::{registry, Check};
+
+let name = "crate_name";
+let version = "0.1.0";
+
 #[cfg(not(feature = "stub_check_version"))]
-let informer = UpdateInformer::new(Crates, name, version);
+let informer = update_informer::new(registry::Crates, name, version);
 
 #[cfg(feature = "stub_check_version")]
-let informer = FakeUpdateInformer::new(Crates, name, version, "1.0.0");
+let informer = update_informer::fake(registry::Crates, name, version, "1.0.0");
 
 informer.check_version();
 ```

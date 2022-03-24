@@ -1,5 +1,4 @@
-use crate::registry::Registry;
-use crate::{http, Error, Package};
+use crate::{http, Package, Registry, Result};
 use serde::Deserialize;
 use std::time::Duration;
 
@@ -35,7 +34,7 @@ fn get_base_url() -> String {
 impl Registry for Crates {
     const NAME: &'static str = "crates";
 
-    fn get_latest_version(pkg: &Package, timeout: Duration) -> Result<Option<String>, Error> {
+    fn get_latest_version(pkg: &Package, timeout: Duration) -> Result<Option<String>> {
         let url = format!("{}/{}/versions", get_base_url(), pkg);
 
         let resp: Response = http::get(&url, timeout).call()?;

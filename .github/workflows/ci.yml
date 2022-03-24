@@ -124,7 +124,8 @@ jobs:
         id: toolchain
         with:
           profile: minimal
-          toolchain: nightly
+          # FIXME: https://github.com/briansmith/ring/issues/1469
+          toolchain: nightly-2022-03-22
           override: true
       - name: Chown cargo registry because of caching
         run: sudo chown -R runner ~/.cargo/registry

@@ -1,13 +1,17 @@
 [package]
 name = "update-informer"
-version = "0.4.0"
+version = "0.5.0"
 edition = "2021"
 authors = ["Mikhail Grachev <work@mgrachev.com>"]
 description = "Update informer for CLI applications"
 homepage = "https://github.com/mgrachev/update-informer"
 repository = "https://github.com/mgrachev/update-informer"
+documentation = "https://docs.rs/update-informer"
 license = "MIT"
 readme = "README.md"
+keywords = ["cli", "update", "informer", "notifier", "github"]
+categories = ["command-line-interface"]
+include = ["/src", "README.md"]
 
 [dependencies]
 directories = "4.0"
@@ -20,7 +24,11 @@ ureq = { version = "2.4", features = ["json"] }
 
 [dev-dependencies]
 mockito = "0.31.0"
-once_cell = "1.9.0"
+once_cell = "1.10.0"
+
+# Used in examples of documentation
+reqwest = { version = "0.11", features = ["blocking"] }
+colored = "2.0.0"
 
 [features]
 default = ["crates"]

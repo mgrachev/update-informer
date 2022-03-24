@@ -1,4 +1,4 @@
-use crate::{Error, Package};
+use crate::{Package, Result};
 use std::time::Duration;
 
 #[cfg(feature = "crates")]
@@ -28,5 +28,5 @@ pub trait Registry {
     /// # Arguments
     ///
     /// * `pkg` - A `Package` struct.
-    fn get_latest_version(pkg: &Package, timeout: Duration) -> Result<Option<String>, Error>;
+    fn get_latest_version(pkg: &Package, timeout: Duration) -> Result<Option<String>>;
 }

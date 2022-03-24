@@ -1,5 +1,4 @@
-use crate::registry::Registry;
-use crate::{http, Error, Package};
+use crate::{http, Package, Registry, Result};
 use serde::Deserialize;
 use std::time::Duration;
 
@@ -30,7 +29,7 @@ fn get_base_url() -> String {
 impl Registry for GitHub {
     const NAME: &'static str = "github";
 
-    fn get_latest_version(pkg: &Package, timeout: Duration) -> Result<Option<String>, Error> {
+    fn get_latest_version(pkg: &Package, timeout: Duration) -> Result<Option<String>> {
         let url = format!("{}/{}/releases/latest", get_base_url(), pkg);
 
         let resp: Response = http::get(&url, timeout)

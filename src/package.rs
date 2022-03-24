@@ -1,6 +1,7 @@
 use std::fmt::{Display, Formatter};
 
 #[derive(Debug, PartialEq)]
+/// A package representation.
 pub struct Package<'a> {
     owner: Option<&'a str>,
     name: &'a str,

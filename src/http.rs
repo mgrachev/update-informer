@@ -1,4 +1,4 @@
-use crate::Error;
+use crate::Result;
 use serde::de::DeserializeOwned;
 use std::time::Duration;
 
@@ -23,7 +23,7 @@ impl Client {
     }
 
     /// Sends a request and parses it to JSON
-    pub(crate) fn call<T: DeserializeOwned>(self) -> Result<T, Error> {
+    pub(crate) fn call<T: DeserializeOwned>(self) -> Result<T> {
         let json = self.request.call()?.into_json()?;
 
         Ok(json)

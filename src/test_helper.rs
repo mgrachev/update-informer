@@ -1,9 +1,7 @@
 use crate::Package;
 use mockito::{mock, Mock};
 use once_cell::sync::Lazy;
-use std::path::PathBuf;
-use std::sync::Mutex;
-use std::{fs, panic};
+use std::{fs, panic, path::PathBuf, sync::Mutex};
 
 static LOCK: Lazy<Mutex<()>> = once_cell::sync::Lazy::new(|| Mutex::default());
 
