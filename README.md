@@ -68,7 +68,7 @@ This function takes the project name and current version as well as check interv
 use update_informer::{registry, Check};
 
 let informer = update_informer::new(registry::Crates, "crate_name", "0.1.0");
-if let Ok(Some(version)) = informer.check_version() {
+if let Some(version) = informer.check_version().ok().flatten()  {
     println!("New version is available: {}", version);
 }
 ```
@@ -190,7 +190,7 @@ fn main() {
     let current_version = env!("CARGO_PKG_VERSION");
 
     let informer = update_informer::new(registry::Crates, pkg_name, current_version);
-    if let Ok(Some(version)) = informer.check_version() {
+    if let Some(version) = informer.check_version().ok().flatten() {
         let msg = format!(
             "A new release of {pkg_name} is available: v{current_version} -> {new_version}",
             pkg_name = pkg_name.italic().cyan(),
@@ -234,7 +234,7 @@ let informer = update_informer::new(registry::Crates, name, version);
 #[cfg(test)]
 let informer = update_informer::fake(registry::Crates, name, version, "1.0.0");
 
-if let Ok(Some(version)) = informer.check_version() {
+if let Some(version) = informer.check_version().ok().flatten() {
     println!("New version is available: {}", version);
 }
 ```

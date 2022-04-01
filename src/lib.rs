@@ -33,7 +33,7 @@
 //! use update_informer::{registry, Check};
 //!
 //! let informer = update_informer::new(registry::Crates, "crate_name", "0.1.0");
-//! if let Ok(Some(version)) = informer.check_version() {
+//! if let Some(version) = informer.check_version().ok().flatten() {
 //!     println!("New version is available: {}", version);
 //! }
 //! ```
@@ -157,7 +157,7 @@
 //! #[cfg(test)]
 //! let informer = update_informer::fake(registry::Crates, name, version, "1.0.0");
 //!
-//! if let Ok(Some(version)) = informer.check_version() {
+//! if let Some(version) = informer.check_version().ok().flatten() {
 //!     println!("New version is available: {}", version);
 //! }
 //! ```
