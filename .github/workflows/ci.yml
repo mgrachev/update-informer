@@ -1,158 +1,48 @@
-#########################################################
-### GitHub workflow files do not support YAML anchors ###
-#########################################################
 name: CI
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  check:
-    name: Check
+  check-all:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
-        id: toolchain
+      - uses: actions-rs/toolchain@v1.0.6
         with:
           profile: minimal
           toolchain: stable
-      - name: Chown cargo registry because of caching
-        run: sudo chown -R runner ~/.cargo/registry
-      - name: Cache cargo registry and target
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cargo/registry
-            target
-          key: check-${{ steps.toolchain.outputs.rustc_hash }}-cargo-${{ hashFiles('**/Cargo.toml') }}
-      - name: Check
-        uses: actions-rs/cargo@v1
-        with:
-          command: check
-      - name: Cleanup for caching
-        uses: actions-rs/cargo@v1
-        with:
-          command: clean
-        if: steps.cache-target.outputs.cache-hit != 'true'
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v1.3.0
+      - run: cargo check
+      - run: cargo fmt --all --check
+      - run: cargo clippy --all-features -- -D warnings
+      - run: cargo build --release --all-features
 
-  fmt:
-    name: Rustfmt
+  test-coverage:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
+      - uses: actions-rs/toolchain@v1.0.6
         with:
           profile: minimal
-          toolchain: stable
-          components: rustfmt
-      - uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
-
-  clippy:
-    name: Clippy
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
-        id: toolchain
-        with:
-          profile: minimal
-          toolchain: stable
-          components: clippy
-      - name: Chown cargo registry because of caching
-        run: sudo chown -R runner ~/.cargo/registry
-      - name: Cache cargo registry and target
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cargo/registry
-            target
-          key: clippy-${{ steps.toolchain.outputs.rustc_hash }}-cargo-${{ hashFiles('**/Cargo.toml') }}
-      - uses: actions-rs/clippy-check@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          args: --all-features -- -D warnings
-      - name: Cleanup for caching
-        uses: actions-rs/cargo@v1
-        with:
-          command: clean
-        if: steps.cache-target.outputs.cache-hit != 'true'
-
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
-        id: toolchain
-        with:
-          profile: minimal
-          toolchain: stable
-      - name: Chown cargo registry because of caching
-        run: sudo chown -R runner ~/.cargo/registry
-      - name: Cache cargo registry and target
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cargo/registry
-            target
-          key: build-${{ steps.toolchain.outputs.rustc_hash }}-cargo-${{ hashFiles('**/Cargo.toml') }}
-      - name: Build
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-      - name: Cleanup for caching
-        uses: actions-rs/cargo@v1
-        with:
-          command: clean
-        if: steps.cache-target.outputs.cache-hit != 'true'
-
-  test:
-    name: Test and coverage
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
-        id: toolchain
-        with:
-          profile: minimal
-          # FIXME: https://github.com/briansmith/ring/issues/1469
-          toolchain: nightly-2022-03-22
+          toolchain: nightly
           override: true
-      - name: Chown cargo registry because of caching
-        run: sudo chown -R runner ~/.cargo/registry
       - name: Set grcov version
         run: echo "GRCOV_VERSION=$(cargo search --limit 1 grcov | head -n1 | cut -d '"' -f2)" >> $GITHUB_ENV
-      - name: Cache cargo registry, target, and grcov binary
-        id: test-grcov
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/bin/grcov
-            target
-          key: test-coverage-${{ steps.toolchain.outputs.rustc_hash }}-cargo-${{ hashFiles('**/Cargo.toml') }}-${{ env.GRCOV_VERSION }}
-      - name: Install grcov
-        run: |
-          cargo install --version $GRCOV_VERSION grcov
-        if: steps.test-grcov.outputs.cache-hit != 'true'
+      - run: cargo install --version $GRCOV_VERSION grcov
       - name: Clean coverage
         run: |
           rm -f target/debug/deps/*.gcda
           rm -f target/debug/deps/*.gcno
-      - name: Run tests
-        uses: actions-rs/cargo@v1
+      - uses: Swatinem/rust-cache@v1.3.0
         with:
-          command: test
-          args: --all-features --no-fail-fast
+          key: ${{ env.GRCOV_VERSION }}
+      - run: cargo test --all-features --no-fail-fast
         env:
           CARGO_INCREMENTAL: '0'
           RUSTFLAGS: |
@@ -163,8 +53,11 @@ jobs:
       - uses: codecov/codecov-action@v2.1.0
         with:
           file: ./lcov.info
-      - name: Cleanup for caching
-        uses: actions-rs/cargo@v1
+
+  links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: lycheeverse/lychee-action@v1.4.1
         with:
-          command: clean
-        if: steps.cache-target.outputs.cache-hit != 'true'
+          args: . --verbose --exclude "pkg_name|your_own_registry"

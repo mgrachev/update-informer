@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 ### 🚀 Added
+- Add GitHub action to check links + CI optimization [#38]
 
 ### ⚙️ Changed
 
@@ -53,6 +54,7 @@ and this project adheres to [Semantic Versioning].
 - Check updates on GitHub [#8]
 - Check updates on Crates.io [#1]
 
+[#38]: https://github.com/mgrachev/update-informer/pull/38
 [#37]: https://github.com/mgrachev/update-informer/pull/37
 [#33]: https://github.com/mgrachev/update-informer/pull/33
 [#28]: https://github.com/mgrachev/update-informer/pull/28
