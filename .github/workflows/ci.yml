@@ -50,7 +50,7 @@ jobs:
           RUSTDOCFLAGS: |
             -Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off
       - uses: actions-rs/grcov@v0.1
-      - uses: codecov/codecov-action@v2.1.0
+      - uses: codecov/codecov-action@v3
         with:
           file: ./lcov.info
 
