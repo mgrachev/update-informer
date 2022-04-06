@@ -1,10 +1,14 @@
-# Update-informer [![CI]](https://github.com/mgrachev/update-informer/actions) [![Crates.io]](https://crates.io/crates/update-informer) [![docs.rs]](https://docs.rs/update-informer) [![codecov]](https://codecov.io/gh/mgrachev/update-informer)
+# Update-informer [![CI][ci-badge]][ci-url] [![Version][crates-badge]][crates-url] [![Docs.rs][docs-badge]][docs-url] [![Codecov][codecov-badge]][codecov-url] [![Downloads][downloads-badge]][crates-url]
 
-[CI]: https://github.com/mgrachev/update-informer/workflows/CI/badge.svg
-[Crates.io]: https://img.shields.io/crates/v/update-informer
-[docs.rs]: https://img.shields.io/docsrs/update-informer
-[codecov]: https://codecov.io/gh/mgrachev/update-informer/branch/main/graph/badge.svg?token=A4XD1DGFGJ
-
+[ci-badge]: https://github.com/mgrachev/update-informer/workflows/CI/badge.svg
+[ci-url]: https://github.com/mgrachev/update-informer/actions
+[crates-badge]: https://img.shields.io/crates/v/update-informer
+[crates-url]: https://crates.io/crates/update-informer
+[docs-badge]: https://img.shields.io/docsrs/update-informer
+[docs-url]: https://docs.rs/update-informer
+[codecov-badge]: https://codecov.io/gh/mgrachev/update-informer/branch/main/graph/badge.svg?token=A4XD1DGFGJ
+[codecov-url]: https://codecov.io/gh/mgrachev/update-informer
+[downloads-badge]: https://img.shields.io/crates/d/update-informer
 [directories]: https://github.com/dirs-dev/directories-rs
 [ureq]: https://github.com/algesten/ureq
 [semver]: https://github.com/dtolnay/semver
@@ -24,10 +28,11 @@ Update informer for CLI applications written in Rust 🦀
 It checks for a new version on Crates.io, GitHub and PyPI 🚀
 
 ## Benefits
-* Support of **Crates.io**, **GitHub** and **PyPI**.
-* Ability to **implement** your **own registry** to check updates.
-* Configurable **check frequency** and **request timeout**.
-* **Minimum dependencies** - only [directories], [ureq], [semver] and [serde].
+
+- Support of **Crates.io**, **GitHub** and **PyPI**.
+- Ability to **implement** your **own registry** to check updates.
+- Configurable **check frequency** and **request timeout**.
+- **Minimum dependencies** - only [directories], [ureq], [semver] and [serde].
 
 The idea is actually not new, as GitHub has been doing for a long time in its [CLI application].<br>
 There is also a popular [JavaScript library].
@@ -54,7 +59,7 @@ update-informer = { version = "0.5.0", default_features = false, features = ["gi
 Available features:
 
 | Name   | Default? |
-|--------|----------|
+| ------ | -------- |
 | cargo  | Yes      |
 | github | No       |
 | pypi   | No       |
@@ -116,15 +121,15 @@ informer.check_version();
 
 You can also change the request timeout. By default, it is 5 seconds:
 
- ```rust
- use std::time::Duration;
- use update_informer::{registry, Check};
+```rust
+use std::time::Duration;
+use update_informer::{registry, Check};
 
- const THIRTY_SECONDS: Duration = Duration::from_secs(30);
+const THIRTY_SECONDS: Duration = Duration::from_secs(30);
 
- let informer = update_informer::new(registry::Crates, "crate_name", "0.1.0").timeout(THIRTY_SECONDS);
- informer.check_version();
- ```
+let informer = update_informer::new(registry::Crates, "crate_name", "0.1.0").timeout(THIRTY_SECONDS);
+informer.check_version();
+```
 
 ## GitHub
 
@@ -150,7 +155,7 @@ informer.check_version();
 
 ## Implementing your own registry
 
-You can implement your own registry to check updates. For example: 
+You can implement your own registry to check updates. For example:
 
 ```rust
 use std::time::Duration;
@@ -215,7 +220,6 @@ The result will look like:
 
 </details>
 
-
 ## Tests
 
 In order not to check for updates in tests, you can use the `FakeUpdateInformer::check_version` function, which returns the desired version.
@@ -264,6 +268,10 @@ let informer = update_informer::fake(registry::Crates, name, version, "1.0.0");
 
 informer.check_version();
 ```
+
+## MSRV
+
+Minimum Supported Rust Version: 1.56.1
 
 ## Sponsors
 

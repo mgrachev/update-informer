@@ -57,7 +57,7 @@ mod tests {
     #[test]
     fn failure_test() {
         let pkg = Package::new(PKG_NAME);
-        let data_path = format!("{}/not_found.json", FIXTURES_PATH);
+        let data_path = format!("{}/not_found.html", FIXTURES_PATH);
         let _mock = mock_pypi(&pkg, 404, &data_path);
 
         let result = PyPI::get_latest_version(&pkg, TIMEOUT);
