@@ -61,3 +61,9 @@ jobs:
       - uses: lycheeverse/lychee-action@v1.4.1
         with:
           args: . --verbose --exclude "pkg_name|your_own_registry"
+
+  style:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: dprint/check@v2.0
