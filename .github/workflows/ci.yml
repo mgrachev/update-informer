@@ -17,7 +17,7 @@ jobs:
           profile: minimal
           toolchain: stable
           components: rustfmt, clippy
-      - uses: Swatinem/rust-cache@v1.3.0
+      - uses: Swatinem/rust-cache@v1.4.0
       - run: cargo check
       - run: cargo fmt --all --check
       - run: cargo clippy --all-features -- -D warnings
@@ -39,7 +39,7 @@ jobs:
         run: |
           rm -f target/debug/deps/*.gcda
           rm -f target/debug/deps/*.gcno
-      - uses: Swatinem/rust-cache@v1.3.0
+      - uses: Swatinem/rust-cache@v1.4.0
         with:
           key: ${{ env.GRCOV_VERSION }}
       - run: cargo test --all-features --no-fail-fast
