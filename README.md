@@ -18,6 +18,8 @@
 [Update-informer]: https://evrone.com/update-informer?utm_source=github&utm_campaign=update-informer
 [Evrone]: https://evrone.com/?utm_source=github&utm_campaign=update-informer
 [MIT]: https://choosealicense.com/licenses/mit
+[git-cliff]: https://github.com/orhun/git-cliff
+[dotenv-linter]: https://github.com/dotenv-linter/dotenv-linter
 
 <img align="right"
      alt="update-informer"
@@ -268,6 +270,11 @@ let informer = update_informer::fake(registry::Crates, name, version, "1.0.0");
 
 informer.check_version();
 ```
+
+## Users
+
+- [git-cliff]
+- [dotenv-linter]
 
 ## MSRV
 
