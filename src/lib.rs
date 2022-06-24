@@ -128,7 +128,7 @@
 //!
 //!     fn get_latest_version(pkg: &Package, _timeout: Duration) -> Result<Option<String>> {
 //!         let url = format!("https://your_own_registry.com/{}/latest-version", pkg);
-//!         let result = reqwest::blocking::get(url)?.text()?;
+//!         let result = ureq::get(&url).call()?.into_string()?;
 //!         let version = result.trim().to_string();
 //!
 //!         Ok(Some(version))

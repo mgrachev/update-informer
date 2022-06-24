@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning].
 
 ### 🚀 Added
 
+- Add `cargo-sort` to CI [#51]
 - Add `dprint` to check formatting [#42]
 - Add GitHub action to check links + CI optimization [#38]
 
@@ -19,6 +20,7 @@ and this project adheres to [Semantic Versioning].
 
 ### 🛠 Fixed
 
+[#51]: https://github.com/mgrachev/update-informer/pull/51
 [#42]: https://github.com/mgrachev/update-informer/pull/42
 [#38]: https://github.com/mgrachev/update-informer/pull/38
 

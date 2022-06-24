@@ -54,6 +54,18 @@ jobs:
         with:
           file: ./lcov.info
 
+  cargo-sort:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1.0.7
+        with:
+          profile: minimal
+          toolchain: stable
+      - uses: Swatinem/rust-cache@v1.4.0
+      - run: cargo install cargo-sort
+      - run: cargo-sort --check
+
   links:
     runs-on: ubuntu-latest
     steps:
@@ -61,6 +73,7 @@ jobs:
       - uses: lycheeverse/lychee-action@v1.5.0
         with:
           args: . --verbose --exclude "pkg_name|your_own_registry"
+          fail: true
 
   style:
     runs-on: ubuntu-latest
