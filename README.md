@@ -13,13 +13,14 @@
 [ureq]: https://github.com/algesten/ureq
 [semver]: https://github.com/dtolnay/semver
 [serde]: https://github.com/serde-rs/serde
-[CLI application]: https://cli.github.com
+[GitHub CLI application]: https://github.com/cli/cli/blob/trunk/internal/update/update.go
+[npm]: https://github.com/npm/cli/blob/latest/lib/utils/update-notifier.js
 [JavaScript library]: https://github.com/yeoman/update-notifier
-[Update-informer]: https://evrone.com/update-informer?utm_source=github&utm_campaign=update-informer
-[Evrone]: https://evrone.com/?utm_source=github&utm_campaign=update-informer
 [MIT]: https://choosealicense.com/licenses/mit
 [git-cliff]: https://github.com/orhun/git-cliff
 [dotenv-linter]: https://github.com/dotenv-linter/dotenv-linter
+[update-informer]: https://evrone.com/update-informer?utm_source=github&utm_campaign=update-informer
+[Evrone]: https://evrone.com/?utm_source=github&utm_campaign=update-informer
 
 <img align="right"
      alt="update-informer"
@@ -36,10 +37,10 @@ It checks for a new version on Crates.io, GitHub and PyPI 🚀
 - Configurable **check frequency** and **request timeout**.
 - **Minimum dependencies** - only [directories], [ureq], [semver] and [serde].
 
-The idea is actually not new, as GitHub has been doing for a long time in its [CLI application].<br>
-There is also a popular [JavaScript library].
+## Idea
 
-[Update-informer] is created & supported by [Evrone].
+The idea is actually not new. This feature has long been present in the [GitHub CLI application] and [npm].<br>
+There is also a popular [JavaScript library].
 
 ## Usage
 
@@ -281,6 +282,8 @@ informer.check_version();
 Minimum Supported Rust Version: 1.56.1
 
 ## Sponsors
+
+[update-informer] is created & supported by [Evrone]
 
 <p>
   <a href="https://evrone.com/?utm_source=github&utm_campaign=update-informer">
