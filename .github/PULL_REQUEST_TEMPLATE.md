@@ -12,7 +12,6 @@ Bug fixes and new features should include tests.
 <!-- Remove items that do not apply. For completed items, change [ ] to [x]. -->
 
 - [ ] Commit messages have been written in [Conventional Commits](https://www.conventionalcommits.org) format;
-- [ ] This PR has been added to [CHANGELOG.md](https://github.com/mgrachev/update-informer/blob/main/CHANGELOG.md) (at the top of the list);
 - [ ] Tests for the changes have been added (for bug fixes / features).
 
 <!-- _NOTE: these things are not required to open a PR and can be done afterwards / while the PR is open._ -->
