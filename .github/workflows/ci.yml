@@ -12,11 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1.0.7
-        with:
-          profile: minimal
-          toolchain: stable
-          components: rustfmt, clippy
+      - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2.0.0
       - run: cargo check
       - run: cargo fmt --all --check
@@ -27,11 +23,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1.0.7
-        with:
-          profile: minimal
-          toolchain: nightly
-          override: true
+      - uses: dtolnay/rust-toolchain@nightly
+      # https://github.com/dtolnay/rust-toolchain/issues/29
+      - run: rustup override set nightly
       - name: Set grcov version
         run: echo "GRCOV_VERSION=$(cargo search --limit 1 grcov | head -n1 | cut -d '"' -f2)" >> $GITHUB_ENV
       - run: cargo install --version $GRCOV_VERSION grcov
@@ -58,10 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1.0.7
-        with:
-          profile: minimal
-          toolchain: stable
+      - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2.0.0
       - run: cargo install cargo-sort
       - run: cargo-sort --check

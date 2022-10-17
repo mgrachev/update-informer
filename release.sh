@@ -6,7 +6,7 @@ if [ -z "$1" ]; then
     exit
 fi
 
-branch_name=`echo ${1} | sed 's/\.//g'`
+branch_name=$(echo "${1}" | sed 's/\.//g')
 git checkout -b "release_${branch_name}"
 
 # Update the version

@@ -1,7 +1,7 @@
 use crate::Result;
 use std::fmt::{Display, Formatter};
 
-#[derive(Debug, PartialEq, PartialOrd)]
+#[derive(Debug, PartialEq, PartialOrd, Eq)]
 pub struct Version(semver::Version);
 
 impl Version {
