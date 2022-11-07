@@ -24,7 +24,7 @@ impl<'a> VersionFile<'a> {
         let metadata = match fs::metadata(&self.path) {
             Ok(meta) => meta,
             Err(e) if e.kind() == ErrorKind::NotFound => {
-                self.write_version(&self.version)?;
+                self.write_version(self.version)?;
                 return Ok(Duration::ZERO);
             }
             Err(e) => return Err(e.into()),
@@ -36,7 +36,7 @@ impl<'a> VersionFile<'a> {
 
     pub(crate) fn recreate_file(&self) -> io::Result<()> {
         fs::remove_file(&self.path)?;
-        self.write_version(&self.version)
+        self.write_version(self.version)
     }
 
     pub(crate) fn write_version<V: AsRef<str>>(&self, version: V) -> io::Result<()> {
