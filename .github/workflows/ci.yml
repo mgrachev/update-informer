@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2.1.0
+      - uses: Swatinem/rust-cache@v2.2.0
       - run: cargo check
       - run: cargo fmt --all --check
       - run: cargo clippy --all-features -- -D warnings
@@ -33,7 +33,7 @@ jobs:
         run: |
           rm -f target/debug/deps/*.gcda
           rm -f target/debug/deps/*.gcno
-      - uses: Swatinem/rust-cache@v2.1.0
+      - uses: Swatinem/rust-cache@v2.2.0
         with:
           key: ${{ env.GRCOV_VERSION }}
       - run: cargo test --all-features --no-fail-fast
@@ -53,7 +53,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2.1.0
+      - uses: Swatinem/rust-cache@v2.2.0
       - run: cargo install cargo-sort
       - run: cargo-sort --check
 
