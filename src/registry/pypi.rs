@@ -1,4 +1,4 @@
-use crate::{http, Package, Registry, Result};
+use crate::{http, Package, Registry, Result, Version};
 use serde::Deserialize;
 use std::time::Duration;
 
@@ -32,7 +32,7 @@ fn get_base_url() -> String {
 impl Registry for PyPI {
     const NAME: &'static str = "pypi";
 
-    fn get_latest_version(pkg: &Package, timeout: Duration) -> Result<Option<String>> {
+    fn get_latest_version(pkg: &Package, _current_version: &Version, timeout: Duration) -> Result<Option<String>> {
         let url = format!("{}/{}/json", get_base_url(), pkg);
 
         let resp: Response = http::get(&url, timeout).call()?;
@@ -59,8 +59,9 @@ mod tests {
         let pkg = Package::new(PKG_NAME);
         let data_path = format!("{}/not_found.html", FIXTURES_PATH);
         let _mock = mock_pypi(&pkg, 404, &data_path);
+        let current_version = Version::parse("0.1.0").expect("parse version");
 
-        let result = PyPI::get_latest_version(&pkg, TIMEOUT);
+        let result = PyPI::get_latest_version(&pkg, &current_version, TIMEOUT);
         assert!(result.is_err());
     }
 
@@ -69,9 +70,10 @@ mod tests {
         let pkg = Package::new(PKG_NAME);
         let data_path = format!("{}/release.json", FIXTURES_PATH);
         let (_mock, _data) = mock_pypi(&pkg, 200, &data_path);
+        let current_version = Version::parse("0.1.0").expect("parse version");
 
         let latest_version = "2022.1.1".to_string();
-        let result = PyPI::get_latest_version(&pkg, TIMEOUT);
+        let result = PyPI::get_latest_version(&pkg, &current_version, TIMEOUT);
 
         assert!(result.is_ok());
         assert_eq!(result.expect("get result"), Some(latest_version));

@@ -162,14 +162,14 @@ You can implement your own registry to check updates. For example:
 
 ```rust
 use std::time::Duration;
-use update_informer::{registry, Check, Package, Registry, Result};
+use update_informer::{registry, Check, Package, Registry, Result, Version};
 
 struct YourOwnRegistry;
 
 impl Registry for YourOwnRegistry {
     const NAME: &'static str = "your_own_registry";
 
-    fn get_latest_version(pkg: &Package, _timeout: Duration) -> Result<Option<String>> {
+    fn get_latest_version(pkg: &Package, _current_version: &Version, _timeout: Duration) -> Result<Option<String>> {
         let url = format!("https://your_own_registry.com/{}/latest-version", pkg);
         let result = ureq::get(&url).call()?.into_string()?;
         let version = result.trim().to_string();

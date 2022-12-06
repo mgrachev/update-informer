@@ -1,4 +1,4 @@
-use crate::{http, Package, Registry, Result};
+use crate::{http, Package, Registry, Result, Version};
 use serde::Deserialize;
 use std::time::Duration;
 
@@ -10,11 +10,11 @@ const REGISTRY_URL: &str = "https://crates.io";
 
 #[derive(Deserialize)]
 struct Response {
-    versions: Vec<Version>,
+    versions: Vec<VersionResponse>,
 }
 
 #[derive(Deserialize)]
-struct Version {
+struct VersionResponse {
     num: String,
 }
 
@@ -34,7 +34,7 @@ fn get_base_url() -> String {
 impl Registry for Crates {
     const NAME: &'static str = "crates";
 
-    fn get_latest_version(pkg: &Package, timeout: Duration) -> Result<Option<String>> {
+    fn get_latest_version(pkg: &Package, _current_version: &Version, timeout: Duration) -> Result<Option<String>> {
         let url = format!("{}/{}/versions", get_base_url(), pkg);
 
         let resp: Response = http::get(&url, timeout).call()?;
@@ -61,8 +61,8 @@ mod tests {
         let pkg = Package::new(PKG_NAME);
         let data_path = format!("{}/not_found.json", FIXTURES_PATH);
         let _mock = mock_crates(&pkg, 404, &data_path);
-
-        let result = Crates::get_latest_version(&pkg, TIMEOUT);
+        let current_version = Version::parse("0.1.0").expect("parse version");
+        let result = Crates::get_latest_version(&pkg, &current_version, TIMEOUT);
         assert!(result.is_err());
     }
 
@@ -79,8 +79,9 @@ mod tests {
             .expect("get latest version")
             .num
             .clone();
+        let current_version = Version::parse("0.1.0").expect("parse version");
 
-        let result = Crates::get_latest_version(&pkg, TIMEOUT);
+        let result = Crates::get_latest_version(&pkg, &current_version, TIMEOUT);
 
         assert!(result.is_ok());
         assert_eq!(result.expect("get result"), Some(latest_version));
