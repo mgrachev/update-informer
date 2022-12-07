@@ -13,7 +13,7 @@ impl Version {
         Ok(Self(version))
     }
 
-    pub(crate) fn get(&self) -> &semver::Version {
+    pub fn get(&self) -> &semver::Version {
         &self.0
     }
 }
