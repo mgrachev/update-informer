@@ -197,7 +197,7 @@
 //! [`serde`]: https://github.com/serde-rs/serde
 
 #[doc = include_str!("../README.md")]
-use crate::{version_file::VersionFile};
+use crate::version_file::VersionFile;
 use std::time::Duration;
 
 pub use package::Package;

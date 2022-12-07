@@ -28,5 +28,9 @@ pub trait Registry {
     /// # Arguments
     ///
     /// * `pkg` - A `Package` struct.
-    fn get_latest_version(pkg: &Package, current_version: &Version, timeout: Duration) -> Result<Option<String>>;
+    fn get_latest_version(
+        pkg: &Package,
+        current_version: &Version,
+        timeout: Duration,
+    ) -> Result<Option<String>>;
 }

@@ -29,7 +29,11 @@ fn get_base_url() -> String {
 impl Registry for GitHub {
     const NAME: &'static str = "github";
 
-    fn get_latest_version(pkg: &Package, current_version: &Version, timeout: Duration) -> Result<Option<String>> {
+    fn get_latest_version(
+        pkg: &Package,
+        _current_version: &Version,
+        timeout: Duration,
+    ) -> Result<Option<String>> {
         let url = format!("{}/{}/releases/latest", get_base_url(), pkg);
         let resp: Response = http::get(&url, timeout)
             .add_header("Accept", "application/vnd.github.v3+json")
