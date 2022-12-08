@@ -8,10 +8,11 @@ and this project adheres to [Semantic Versioning].
 [Keep a Changelog]: https://keepachangelog.com/en/1.0.0
 [Semantic Versioning]: https://semver.org/spec/v2.0.0.html
 
-## [Unreleased]
+## [v0.6.0](https://github.com/mgrachev/update-informer/releases/tag/v0.6.0) - 2022-12-08
 
 ### 🚀 Added
 
+- Support current version ([#72](https://github.com/mgrachev/update-informer/pull/72))
 - Add cargo-sort ([#51](https://github.com/mgrachev/update-informer/pull/51))
 - Add list of users
 - Add `dprint` to check formatting ([#42](https://github.com/mgrachev/update-informer/pull/42))
@@ -19,7 +20,21 @@ and this project adheres to [Semantic Versioning].
 
 ### ⚙️ Changed
 
-- Generate a changelog and update release process
+- Bump wagoid/commitlint-github-action from 5.2.2 to 5.3.0 ([#71](https://github.com/mgrachev/update-informer/pull/71))
+- Bump lycheeverse/lychee-action from 1.5.3 to 1.5.4 ([#69](https://github.com/mgrachev/update-informer/pull/69))
+- Bump Swatinem/rust-cache from 2.1.0 to 2.2.0 ([#70](https://github.com/mgrachev/update-informer/pull/70))
+- Bump lycheeverse/lychee-action from 1.5.2 to 1.5.3 ([#68](https://github.com/mgrachev/update-informer/pull/68))
+- Bump lycheeverse/lychee-action from 1.5.1 to 1.5.2 ([#64](https://github.com/mgrachev/update-informer/pull/64))
+- Bump Swatinem/rust-cache from 2.0.1 to 2.1.0 ([#67](https://github.com/mgrachev/update-informer/pull/67))
+- Fix clippy warnings ([#66](https://github.com/mgrachev/update-informer/pull/66))
+- Bump wagoid/commitlint-github-action from 5.2.0 to 5.2.2 ([#63](https://github.com/mgrachev/update-informer/pull/63))
+- Bump Swatinem/rust-cache from 2.0.0 to 2.0.1 ([#62](https://github.com/mgrachev/update-informer/pull/62))
+- Bump wagoid/commitlint-github-action from 5.1.2 to 5.2.0 ([#60](https://github.com/mgrachev/update-informer/pull/60))
+- Replace `actions-rs/toolchain` with `dtolnay/rust-toolchain` ([#61](https://github.com/mgrachev/update-informer/pull/61))
+- Bump wagoid/commitlint-github-action from 5.0.2 to 5.1.2 ([#59](https://github.com/mgrachev/update-informer/pull/59))
+- Bump actions/stale from 5 to 6 ([#58](https://github.com/mgrachev/update-informer/pull/58))
+- Generate a changelog and update release process ([#57](https://github.com/mgrachev/update-informer/pull/57))
+- Update readme ([#56](https://github.com/mgrachev/update-informer/pull/56))
 - Bump lycheeverse/lychee-action from 1.5.0 to 1.5.1 ([#55](https://github.com/mgrachev/update-informer/pull/55))
 - Bump Swatinem/rust-cache from 1.4.0 to 2.0.0 ([#53](https://github.com/mgrachev/update-informer/pull/53))
 - Bump dprint/check from 2.0 to 2.1 ([#54](https://github.com/mgrachev/update-informer/pull/54))
