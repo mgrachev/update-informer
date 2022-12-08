@@ -119,14 +119,14 @@
 //!
 //! ```rust
 //! use std::time::Duration;
-//! use update_informer::{registry, Check, Package, Registry, Result};
+//! use update_informer::{registry, Check, Package, Registry, Result, Version};
 //!
 //! struct YourOwnRegistry;
 //!
 //! impl Registry for YourOwnRegistry {
 //!     const NAME: &'static str = "your_own_registry";
 //!
-//!     fn get_latest_version(pkg: &Package, _timeout: Duration) -> Result<Option<String>> {
+//!     fn get_latest_version(pkg: &Package, _current_version: &Version, _timeout: Duration) -> Result<Option<String>> {
 //!         let url = format!("https://your_own_registry.com/{}/latest-version", pkg);
 //!         let result = ureq::get(&url).call()?.into_string()?;
 //!         let version = result.trim().to_string();
@@ -197,11 +197,12 @@
 //! [`serde`]: https://github.com/serde-rs/serde
 
 #[doc = include_str!("../README.md")]
-use crate::{version::Version, version_file::VersionFile};
+use crate::version_file::VersionFile;
 use std::time::Duration;
 
 pub use package::Package;
 pub use registry::Registry;
+pub use version::Version;
 
 mod http;
 mod package;
@@ -346,10 +347,11 @@ impl<R: Registry, N: AsRef<str>, V: AsRef<str>> Check for UpdateInformer<R, N, V
     /// ```
     fn check_version(&self) -> Result<Option<Version>> {
         let pkg = Package::new(self.name.as_ref());
+        let current_version = Version::parse(self.version.as_ref())?;
 
         // If the interval is zero, don't use the cache file
         let latest_version = if self.interval.is_zero() {
-            match R::get_latest_version(&pkg, self.timeout)? {
+            match R::get_latest_version(&pkg, &current_version, self.timeout)? {
                 Some(v) => v,
                 None => return Ok(None),
             }
@@ -361,7 +363,7 @@ impl<R: Registry, N: AsRef<str>, V: AsRef<str>> Check for UpdateInformer<R, N, V
                 // This is needed to update mtime of the file
                 latest_version_file.recreate_file()?;
 
-                match R::get_latest_version(&pkg, self.timeout)? {
+                match R::get_latest_version(&pkg, &current_version, self.timeout)? {
                     Some(v) => {
                         latest_version_file.write_version(&v)?;
                         v
@@ -374,7 +376,6 @@ impl<R: Registry, N: AsRef<str>, V: AsRef<str>> Check for UpdateInformer<R, N, V
         };
 
         let latest_version = Version::parse(latest_version)?;
-        let current_version = Version::parse(self.version.as_ref())?;
 
         if latest_version > current_version {
             return Ok(Some(latest_version));

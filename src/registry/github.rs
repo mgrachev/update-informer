@@ -1,4 +1,4 @@
-use crate::{http, Package, Registry, Result};
+use crate::{http, Package, Registry, Result, Version};
 use serde::Deserialize;
 use std::time::Duration;
 
@@ -29,9 +29,12 @@ fn get_base_url() -> String {
 impl Registry for GitHub {
     const NAME: &'static str = "github";
 
-    fn get_latest_version(pkg: &Package, timeout: Duration) -> Result<Option<String>> {
+    fn get_latest_version(
+        pkg: &Package,
+        _current_version: &Version,
+        timeout: Duration,
+    ) -> Result<Option<String>> {
         let url = format!("{}/{}/releases/latest", get_base_url(), pkg);
-
         let resp: Response = http::get(&url, timeout)
             .add_header("Accept", "application/vnd.github.v3+json")
             .call()?;
@@ -58,8 +61,9 @@ mod tests {
         let pkg = Package::new(PKG_NAME);
         let data_path = format!("{}/not_found.json", FIXTURES_PATH);
         let _mock = mock_github(&pkg, 404, &data_path);
+        let current_version = Version::parse("0.1.0").expect("parse version");
 
-        let result = GitHub::get_latest_version(&pkg, TIMEOUT);
+        let result = GitHub::get_latest_version(&pkg, &current_version, TIMEOUT);
         assert!(result.is_err());
     }
 
@@ -71,8 +75,9 @@ mod tests {
 
         let json: Response = serde_json::from_str(&data).expect("deserialize json");
         let latest_version = json.tag_name[1..].to_string();
+        let current_version = Version::parse("1.6.3-canary.0").expect("parse version");
 
-        let result = GitHub::get_latest_version(&pkg, TIMEOUT);
+        let result = GitHub::get_latest_version(&pkg, &current_version, TIMEOUT);
 
         assert!(result.is_ok());
         assert_eq!(result.expect("get result"), Some(latest_version));

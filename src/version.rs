@@ -12,6 +12,10 @@ impl Version {
 
         Ok(Self(version))
     }
+
+    pub fn get(&self) -> &semver::Version {
+        &self.0
+    }
 }
 
 impl Display for Version {
