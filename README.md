@@ -21,6 +21,7 @@
 [dotenv-linter]: https://github.com/dotenv-linter/dotenv-linter
 [update-informer]: https://evrone.com/update-informer?utm_source=github&utm_campaign=update-informer
 [Evrone]: https://evrone.com/?utm_source=github&utm_campaign=update-informer
+[turbo]: https://github.com/vercel/turbo
 
 <img align="right"
      alt="update-informer"
@@ -271,6 +272,7 @@ informer.check_version();
 
 - [git-cliff]
 - [dotenv-linter]
+- [turbo]
 
 ## MSRV
 
