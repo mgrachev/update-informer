@@ -28,6 +28,7 @@ pub(crate) fn within_test_dir(f: fn(path: PathBuf)) {
     }
 }
 
+#[cfg(feature = "crates")]
 pub(crate) fn mock_crates(pkg: &Package, status: usize, data_path: &str) -> (Mock, String) {
     let mock_path = format!("/api/v1/crates/{}/versions", pkg);
     let data = fs::read_to_string(data_path).expect("read file to string");
@@ -38,6 +39,14 @@ pub(crate) fn mock_crates(pkg: &Package, status: usize, data_path: &str) -> (Moc
 #[cfg(feature = "github")]
 pub(crate) fn mock_github(pkg: &Package, status: usize, data_path: &str) -> (Mock, String) {
     let mock_path = format!("/repos/{}/releases/latest", pkg);
+    let data = fs::read_to_string(data_path).expect("read file to string");
+
+    (mock_http(&mock_path, status, &data), data)
+}
+
+#[cfg(feature = "npm")]
+pub(crate) fn mock_npm(pkg: &Package, status: usize, data_path: &str) -> (Mock, String) {
+    let mock_path = format!("/{}/latest", pkg);
     let data = fs::read_to_string(data_path).expect("read file to string");
 
     (mock_http(&mock_path, status, &data), data)

@@ -5,6 +5,9 @@ use std::time::Duration;
 #[cfg(test)]
 use mockito;
 
+#[cfg(not(test))]
+const REGISTRY_URL: &str = "https://pypi.org";
+
 #[derive(Deserialize, Debug)]
 struct Response {
     info: Info,
@@ -21,7 +24,7 @@ pub struct PyPI;
 
 #[cfg(not(test))]
 fn get_base_url() -> String {
-    "https://pypi.org/pypi".to_string()
+    format!("{}/pypi", REGISTRY_URL)
 }
 
 #[cfg(test)]
@@ -38,7 +41,6 @@ impl Registry for PyPI {
         timeout: Duration,
     ) -> Result<Option<String>> {
         let url = format!("{}/{}/json", get_base_url(), pkg);
-
         let resp: Response = http::get(&url, timeout).call()?;
 
         if !resp.info.yanked {

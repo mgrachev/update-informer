@@ -40,7 +40,6 @@ impl Registry for Crates {
         timeout: Duration,
     ) -> Result<Option<String>> {
         let url = format!("{}/{}/versions", get_base_url(), pkg);
-
         let resp: Response = http::get(&url, timeout).call()?;
 
         if let Some(v) = resp.versions.first() {
