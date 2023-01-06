@@ -267,28 +267,6 @@ where
 }
 
 impl<R: Registry, N: AsRef<str>, V: AsRef<str>> UpdateInformer<R, N, V> {
-    /// Constructs a new `UpdateInformer`.
-    ///
-    /// # Arguments
-    ///
-    /// * `registry` - A registry service such as Crates.io or GitHub.
-    /// * `name` - A project name.
-    /// * `version` - Current version of the project.
-    ///
-    /// # Examples
-    ///
-    /// ```rust
-    /// use update_informer::{registry, Check, UpdateInformer};
-    ///
-    /// let name = env!("CARGO_PKG_NAME");
-    /// let version = env!("CARGO_PKG_VERSION");
-    /// let informer = UpdateInformer::new(registry::Crates, name, version);
-    /// ```
-    #[deprecated(since = "0.5.0", note = "Use `update_informer::new` instead")]
-    pub fn new(registry: R, name: N, version: V) -> Self {
-        crate::new(registry, name, version)
-    }
-
     /// Sets an interval how often to check for a new version.
     ///
     /// # Arguments
