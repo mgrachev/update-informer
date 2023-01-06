@@ -30,4 +30,5 @@ once_cell = "1.10.0"
 default = ["crates"]
 crates = []
 github = []
+npm = []
 pypi = []

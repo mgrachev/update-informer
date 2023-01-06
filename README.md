@@ -30,11 +30,11 @@
 
 Update informer for CLI applications written in Rust 🦀
 
-It checks for a new version on Crates.io, GitHub and PyPI 🚀
+It checks for a new version on Crates.io, GitHub, Npm and PyPI 🚀
 
 ## Benefits
 
-- Support of **Crates.io**, **GitHub** and **PyPI**.
+- Support of **Crates.io**, **GitHub**, **Npm** and **PyPI**.
 - Ability to **implement** your **own registry** to check updates.
 - Configurable **check frequency** and **request timeout**.
 - **Minimum dependencies** - only [directories], [ureq], [semver] and [serde].
@@ -67,6 +67,7 @@ Available features:
 | ------ | -------- |
 | cargo  | Yes      |
 | github | No       |
+| npm    | No       |
 | pypi   | No       |
 
 ## Crates.io
@@ -144,6 +145,17 @@ To check for a new version on GitHub (note that the project name must contain th
 use update_informer::{registry, Check};
 
 let informer = update_informer::new(registry::GitHub, "owner/repo", "0.1.0");
+informer.check_version();
+```
+
+## Npm
+
+To check for a new version on Npm:
+
+```rust
+use update_informer::{registry, Check};
+
+let informer = update_informer::new(registry::Npm, "package_name", "0.1.0");
 informer.check_version();
 ```
 
