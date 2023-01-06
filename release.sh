@@ -14,14 +14,12 @@ msg="# managed by release.sh"
 sed -i '' "s/^version = .* $msg$/version = \"${1#v}\" $msg/" Cargo.toml
 
 # Update the changelog
-git-cliff --tag "$1" > CHANGELOG.md
-# Remove the last "\n" symbol from the changelog
-sed -i '' '$d' CHANGELOG.md
+git-cliff --tag "$1" --unreleased --prepend CHANGELOG.md
 
 # Commit changes
 git add CHANGELOG.md Cargo.toml
 git commit -m "chore(release): $1"
-git tag "$1"
 
 echo "Done."
-echo "Now push the commit and tag to GitHub."
+echo "Now push the commit to GitHub."
+echo "And after review, create a tag and push it to GitHub."

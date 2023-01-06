@@ -2,12 +2,6 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog],
-and this project adheres to [Semantic Versioning].
-
-[Keep a Changelog]: https://keepachangelog.com/en/1.0.0
-[Semantic Versioning]: https://semver.org/spec/v2.0.0.html
-
 ## [v0.6.0](https://github.com/mgrachev/update-informer/releases/tag/v0.6.0) - 2022-12-08
 
 ### 🚀 Added

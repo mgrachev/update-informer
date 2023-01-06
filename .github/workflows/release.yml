@@ -18,16 +18,10 @@ jobs:
         run: |
           cargo login ${{ secrets.CRATES_TOKEN }}
           cargo publish
-      - name: Generate a changelog
-        uses: orhun/git-cliff-action@v1
-        id: git-cliff
-        with:
-          config: cliff.toml
-          args: -v --latest --strip header
       - name: Publish release
         uses: softprops/action-gh-release@v1
         with:
           draft: true
-          body_path: ${{ steps.git-cliff.outputs.changelog }}
+          body_path: CHANGELOG.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
