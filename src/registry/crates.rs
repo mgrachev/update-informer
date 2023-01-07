@@ -1,6 +1,8 @@
-use crate::{http, Package, Registry, Result, Version};
+use crate::{
+    http_client::{HttpClient, SendRequest},
+    Package, Registry, Result, Version,
+};
 use serde::Deserialize;
-use std::time::Duration;
 
 #[cfg(test)]
 use mockito;
@@ -34,13 +36,13 @@ fn get_base_url() -> String {
 impl Registry for Crates {
     const NAME: &'static str = "crates";
 
-    fn get_latest_version(
+    fn get_latest_version<T: SendRequest>(
+        http_client: HttpClient<T>,
         pkg: &Package,
         _current_version: &Version,
-        timeout: Duration,
     ) -> Result<Option<String>> {
         let url = format!("{}/{}/versions", get_base_url(), pkg);
-        let resp: Response = http::get(&url, timeout).call()?;
+        let resp = http_client.get::<Response>(&url)?;
 
         if let Some(v) = resp.versions.first() {
             return Ok(Some(v.num.clone()));
@@ -53,7 +55,9 @@ impl Registry for Crates {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::http_client;
     use crate::test_helper::mock_crates;
+    use std::time::Duration;
 
     const PKG_NAME: &str = "repo";
     const FIXTURES_PATH: &str = "tests/fixtures/registry/crates";
@@ -62,16 +66,18 @@ mod tests {
     #[test]
     fn failure_test() {
         let pkg = Package::new(PKG_NAME);
+        let client = http_client::new(http_client::UreqHttpClient, TIMEOUT);
         let data_path = format!("{}/not_found.json", FIXTURES_PATH);
         let _mock = mock_crates(&pkg, 404, &data_path);
         let current_version = Version::parse("0.1.0").expect("parse version");
-        let result = Crates::get_latest_version(&pkg, &current_version, TIMEOUT);
+        let result = Crates::get_latest_version(client, &pkg, &current_version);
         assert!(result.is_err());
     }
 
     #[test]
     fn success_test() {
         let pkg = Package::new(PKG_NAME);
+        let client = http_client::new(http_client::UreqHttpClient, TIMEOUT);
         let data_path = format!("{}/versions.json", FIXTURES_PATH);
         let (_mock, data) = mock_crates(&pkg, 200, &data_path);
 
@@ -84,7 +90,7 @@ mod tests {
             .clone();
         let current_version = Version::parse("0.1.0").expect("parse version");
 
-        let result = Crates::get_latest_version(&pkg, &current_version, TIMEOUT);
+        let result = Crates::get_latest_version(client, &pkg, &current_version);
 
         assert!(result.is_ok());
         assert_eq!(result.expect("get result"), Some(latest_version));

@@ -1,29 +1,28 @@
-use crate::{Package, Result, Version};
-use std::time::Duration;
+use crate::{
+    http_client::{HttpClient, SendRequest},
+    Package, Result, Version,
+};
 
+#[cfg(feature = "crates")]
+mod crates;
 #[cfg(feature = "crates")]
 pub use crates::Crates;
 
 #[cfg(feature = "github")]
+mod github;
+#[cfg(feature = "github")]
 pub use github::GitHub;
 
+#[cfg(feature = "npm")]
+mod npm;
 #[cfg(feature = "npm")]
 pub use npm::Npm;
 
 #[cfg(feature = "pypi")]
-pub use pypi::PyPI;
-
-#[cfg(feature = "crates")]
-mod crates;
-
-#[cfg(feature = "github")]
-mod github;
-
-#[cfg(feature = "npm")]
-mod npm;
+mod pypi;
 
 #[cfg(feature = "pypi")]
-mod pypi;
+pub use pypi::PyPI;
 
 pub trait Registry {
     /// The name of the registry.
@@ -33,12 +32,12 @@ pub trait Registry {
     ///
     /// # Arguments
     ///
+    /// * `http_client` - An http client to send requests to the registry.
     /// * `pkg` - A `Package` struct.
     /// * `current_version` - The current version of the package.
-    /// * `timeout` - A request timeout.
-    fn get_latest_version(
+    fn get_latest_version<T: SendRequest>(
+        http_client: HttpClient<T>,
         pkg: &Package,
         current_version: &Version,
-        timeout: Duration,
     ) -> Result<Option<String>>;
 }
