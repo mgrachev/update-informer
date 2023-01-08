@@ -5,26 +5,28 @@
 //! * Support of [Crates.io](#cratesio), [GitHub](#github), [Npm](#npm) and [PyPI](#pypi).
 //! * [Ability to implement your own registry to check updates](#implementing-your-own-registry).
 //! * Configurable [check frequency](#interval) and [request timeout](#request-timeout).
-//! * Minimum dependencies - only [`directories`], [`ureq`], [`semver`] and [`serde`].
+//! * Minimum dependencies - only [`directories`], [`semver`], [`serde`] and an HTTP client ([`ureq`] or [`reqwest`]).
 //!
 //! ## Usage
 //!
-//! By default, `update-informer` can only check on [`Crates.io`].
-//! To enable support for other registries, use `features`:
+//! By default, `update-informer` can only check on [`Crates.io`] and uses [`ureq`] as a default HTTP client.
+//! To enable support for other registries or change the HTTP client, use `features`:
 //!
 //! ```toml
 //! [dependencies]
-//! update-informer = { version = "0.5.0", default_features = false, features = ["github"] }
+//! update-informer = { version = "0.5.0", default_features = false, features = ["github", "reqwest"] }
 //! ```
 //!
 //! Available features:
 //!
-//! | Name   | Default? |
-//! |--------|----------|
-//! | cargo  | Yes      |
-//! | github | No       |
-//! | npm    | No       |
-//! | pypi   | No       |
+//! | Name        | Type        | Default? |
+//! |-------------|-------------|----------|
+//! | cargo       | Registry    | Yes      |
+//! | github      | Registry    | No       |
+//! | npm         | Registry    | No       |
+//! | pypi        | Registry    | No       |
+//! | [`ureq`]    | HTTP client | Yes      |
+//! | [`reqwest`] | HTTP client | No       |
 //!
 //! ## Crates.io
 //!
@@ -129,15 +131,14 @@
 //! You can implement your own registry to check updates. For example:
 //!
 //! ```rust
-//! use std::time::Duration;
-//! use update_informer::{registry, Check, Package, Registry, Result, Version};
+//! use update_informer::{http_client::{HttpClient, SendRequest}, registry, Check, Package, Registry, Result, Version};
 //!
 //! struct YourOwnRegistry;
 //!
 //! impl Registry for YourOwnRegistry {
 //!     const NAME: &'static str = "your_own_registry";
 //!
-//!     fn get_latest_version(pkg: &Package, _current_version: &Version, _timeout: Duration) -> Result<Option<String>> {
+//!     fn get_latest_version<T: SendRequest>(_http_client: HttpClient<T>, pkg: &Package, _current_version: &Version) -> Result<Option<String>> {
 //!         let url = format!("https://your_own_registry.com/{}/latest-version", pkg);
 //!         let result = ureq::get(&url).call()?.into_string()?;
 //!         let version = result.trim().to_string();
@@ -207,16 +208,16 @@
 //! [`ureq`]: https://github.com/algesten/ureq
 //! [`semver`]: https://github.com/dtolnay/semver
 //! [`serde`]: https://github.com/serde-rs/serde
+//! [`reqwest`]: https://github.com/seanmonstar/reqwest
 
 #[doc = include_str!("../README.md")]
-use crate::version_file::VersionFile;
+use crate::{http_client::DefaultHttpClient, version_file::VersionFile};
 use std::time::Duration;
 
 pub use package::Package;
 pub use registry::Registry;
 pub use version::Version;
 
-mod http;
 mod package;
 mod version;
 mod version_file;
@@ -226,6 +227,9 @@ mod test_helper;
 
 /// A registry service that stores information about releases.
 pub mod registry;
+
+/// An HTTP client to send requests to the registry.
+pub mod http_client;
 
 type Error = Box<dyn std::error::Error>;
 pub type Result<T> = std::result::Result<T, Error>;
@@ -339,9 +343,11 @@ impl<R: Registry, N: AsRef<str>, V: AsRef<str>> Check for UpdateInformer<R, N, V
         let pkg = Package::new(self.name.as_ref());
         let current_version = Version::parse(self.version.as_ref())?;
 
+        let client = http_client::new(DefaultHttpClient {}, self.timeout);
+
         // If the interval is zero, don't use the cache file
         let latest_version = if self.interval.is_zero() {
-            match R::get_latest_version(&pkg, &current_version, self.timeout)? {
+            match R::get_latest_version(client, &pkg, &current_version)? {
                 Some(v) => v,
                 None => return Ok(None),
             }
@@ -353,7 +359,7 @@ impl<R: Registry, N: AsRef<str>, V: AsRef<str>> Check for UpdateInformer<R, N, V
                 // This is needed to update mtime of the file
                 latest_version_file.recreate_file()?;
 
-                match R::get_latest_version(&pkg, &current_version, self.timeout)? {
+                match R::get_latest_version(client, &pkg, &current_version)? {
                     Some(v) => {
                         latest_version_file.write_version(&v)?;
                         v

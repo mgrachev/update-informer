@@ -23,6 +23,7 @@
 [Evrone]: https://evrone.com/?utm_source=github&utm_campaign=update-informer
 [turbo]: https://github.com/vercel/turbo
 [ruff]: https://github.com/charliermarsh/ruff
+[reqwest]: https://github.com/seanmonstar/reqwest
 
 <img align="right"
      alt="update-informer"
@@ -37,7 +38,7 @@ It checks for a new version on Crates.io, GitHub, Npm and PyPI 🚀
 - Support of **Crates.io**, **GitHub**, **Npm** and **PyPI**.
 - Ability to **implement** your **own registry** to check updates.
 - Configurable **check frequency** and **request timeout**.
-- **Minimum dependencies** - only [directories], [ureq], [semver] and [serde].
+- **Minimum dependencies** - only [directories], [semver], [serde] and an HTTP client ([ureq] or [reqwest]).
 
 ## Idea
 
@@ -50,25 +51,27 @@ Add `update-informer` to `Cargo.toml`:
 
 ```toml
 [dependencies]
-update-informer = "0.5.0"
+update-informer = "0.6.0"
 ```
 
-By default, `update-informer` can only check on Crates.io.
-To enable support for other registries, use `features`:
+By default, `update-informer` can only check on Crates.io and uses `ureq` as a default HTTP client.
+To enable support for other registries or change the HTTP client, use `features`:
 
 ```toml
 [dependencies]
-update-informer = { version = "0.5.0", default_features = false, features = ["github"] }
+update-informer = { version = "0.6.0", default_features = false, features = ["github", "reqwest"] }
 ```
 
 Available features:
 
-| Name   | Default? |
-| ------ | -------- |
-| cargo  | Yes      |
-| github | No       |
-| npm    | No       |
-| pypi   | No       |
+| Name      | Type        | Default? |
+| --------- | ----------- | -------- |
+| cargo     | Registry    | Yes      |
+| github    | Registry    | No       |
+| npm       | Registry    | No       |
+| pypi      | Registry    | No       |
+| [ureq]    | HTTP client | Yes      |
+| [reqwest] | HTTP client | No       |
 
 ## Crates.io
 
@@ -175,16 +178,16 @@ informer.check_version();
 You can implement your own registry to check updates. For example:
 
 ```rust
-use std::time::Duration;
-use update_informer::{registry, Check, Package, Registry, Result, Version};
+use update_informer::{http_client::{HttpClient, SendRequest}, registry, Check, Package, Registry, Result, Version};
 
 struct YourOwnRegistry;
 
 impl Registry for YourOwnRegistry {
     const NAME: &'static str = "your_own_registry";
 
-    fn get_latest_version(pkg: &Package, _current_version: &Version, _timeout: Duration) -> Result<Option<String>> {
+    fn get_latest_version<T: SendRequest>(_http_client: HttpClient<T>, pkg: &Package, _current_version: &Version) -> Result<Option<String>> {
         let url = format!("https://your_own_registry.com/{}/latest-version", pkg);
+        
         let result = ureq::get(&url).call()?.into_string()?;
         let version = result.trim().to_string();
 
