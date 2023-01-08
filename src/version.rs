@@ -1,7 +1,7 @@
 use crate::Result;
 use std::fmt::{Display, Formatter};
 
-#[derive(Debug, PartialEq, PartialOrd, Eq)]
+#[derive(Debug, Clone, PartialEq, PartialOrd, Eq)]
 pub struct Version(semver::Version);
 
 impl Version {
@@ -13,7 +13,8 @@ impl Version {
         Ok(Self(version))
     }
 
-    pub fn get(&self) -> &semver::Version {
+    /// Return `semver::Version`.
+    pub fn semver(&self) -> &semver::Version {
         &self.0
     }
 }
@@ -101,5 +102,14 @@ mod tests {
         let version = Version::parse("0.1.0");
         assert!(version.is_ok());
         assert_eq!(String::from("v0.1.0"), format!("{}", version.unwrap()))
+    }
+
+    #[test]
+    fn semver_test() {
+        let version = Version::parse("0.1.0-canary");
+        assert!(version.is_ok());
+
+        let version = version.unwrap();
+        assert_eq!(version.semver().pre.to_string(), "canary");
     }
 }

@@ -1,6 +1,6 @@
 use crate::{
     http_client::{HttpClient, SendRequest},
-    Package, Result, Version,
+    Package, Result,
 };
 
 #[cfg(feature = "crates")]
@@ -38,6 +38,5 @@ pub trait Registry {
     fn get_latest_version<T: SendRequest>(
         http_client: HttpClient<T>,
         pkg: &Package,
-        current_version: &Version,
     ) -> Result<Option<String>>;
 }

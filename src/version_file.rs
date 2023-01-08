@@ -69,8 +69,9 @@ mod tests {
 
     #[test]
     fn new_test() {
-        let pkg = Package::new("repo");
-        let version_file1 = VersionFile::new("myreg", &pkg, "0.1.0").unwrap();
+        let version = "0.1.0";
+        let pkg = Package::new("repo", version).unwrap();
+        let version_file1 = VersionFile::new("myreg", &pkg, version).unwrap();
         let version_file2 = VersionFile {
             path: cache_path().unwrap().join("myreg-repo"),
             version: "0.1.0",
@@ -81,9 +82,10 @@ mod tests {
 
     #[test]
     fn create_version_file_twice_test() {
-        let pkg = Package::new("repo");
-        let version_file1 = VersionFile::new("reg", &pkg, "0.1.0").expect("create version file");
-        let version_file2 = VersionFile::new("reg", &pkg, "0.1.0").expect("create version file");
+        let version = "0.1.0";
+        let pkg = Package::new("repo", version).unwrap();
+        let version_file1 = VersionFile::new("reg", &pkg, version).expect("create version file");
+        let version_file2 = VersionFile::new("reg", &pkg, version).expect("create version file");
         assert_eq!(version_file1, version_file2);
     }
 

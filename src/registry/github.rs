@@ -1,6 +1,6 @@
 use crate::{
     http_client::{HttpClient, SendRequest},
-    Package, Registry, Result, Version,
+    Package, Registry, Result,
 };
 use serde::Deserialize;
 
@@ -34,7 +34,6 @@ impl Registry for GitHub {
     fn get_latest_version<T: SendRequest>(
         http_client: HttpClient<T>,
         pkg: &Package,
-        _current_version: &Version,
     ) -> Result<Option<String>> {
         let url = format!("{}/{}/releases/latest", get_base_url(), pkg);
         let resp = http_client
@@ -52,8 +51,7 @@ impl Registry for GitHub {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::http_client;
-    use crate::test_helper::mock_github;
+    use crate::{http_client, test_helper::mock_github};
     use std::time::Duration;
 
     const PKG_NAME: &str = "owner/repo";
@@ -62,28 +60,28 @@ mod tests {
 
     #[test]
     fn failure_test() {
-        let pkg = Package::new(PKG_NAME);
+        let raw_version = "0.1.0";
+        let pkg = Package::new(PKG_NAME, raw_version).unwrap();
         let client = http_client::new(http_client::UreqHttpClient, TIMEOUT);
         let data_path = format!("{}/not_found.json", FIXTURES_PATH);
         let _mock = mock_github(&pkg, 404, &data_path);
-        let current_version = Version::parse("0.1.0").expect("parse version");
 
-        let result = GitHub::get_latest_version(client, &pkg, &current_version);
+        let result = GitHub::get_latest_version(client, &pkg);
         assert!(result.is_err());
     }
 
     #[test]
     fn success_test() {
-        let pkg = Package::new(PKG_NAME);
+        let raw_version = "1.6.3-canary.0";
+        let pkg = Package::new(PKG_NAME, raw_version).unwrap();
         let client = http_client::new(http_client::UreqHttpClient, TIMEOUT);
         let data_path = format!("{}/release.json", FIXTURES_PATH);
         let (_mock, data) = mock_github(&pkg, 200, &data_path);
 
         let json: Response = serde_json::from_str(&data).expect("deserialize json");
         let latest_version = json.tag_name[1..].to_string();
-        let current_version = Version::parse("1.6.3-canary.0").expect("parse version");
 
-        let result = GitHub::get_latest_version(client, &pkg, &current_version);
+        let result = GitHub::get_latest_version(client, &pkg);
 
         assert!(result.is_ok());
         assert_eq!(result.expect("get result"), Some(latest_version));

@@ -131,14 +131,14 @@
 //! You can implement your own registry to check updates. For example:
 //!
 //! ```rust
-//! use update_informer::{http_client::{HttpClient, SendRequest}, registry, Check, Package, Registry, Result, Version};
+//! use update_informer::{http_client::{HttpClient, SendRequest}, registry, Check, Package, Registry, Result};
 //!
 //! struct YourOwnRegistry;
 //!
 //! impl Registry for YourOwnRegistry {
 //!     const NAME: &'static str = "your_own_registry";
 //!
-//!     fn get_latest_version<T: SendRequest>(_http_client: HttpClient<T>, pkg: &Package, _current_version: &Version) -> Result<Option<String>> {
+//!     fn get_latest_version<T: SendRequest>(_http_client: HttpClient<T>, pkg: &Package) -> Result<Option<String>> {
 //!         let url = format!("https://your_own_registry.com/{}/latest-version", pkg);
 //!         let result = ureq::get(&url).call()?.into_string()?;
 //!         let version = result.trim().to_string();
@@ -340,14 +340,12 @@ impl<R: Registry, N: AsRef<str>, V: AsRef<str>> Check for UpdateInformer<R, N, V
     /// informer.check_version();
     /// ```
     fn check_version(&self) -> Result<Option<Version>> {
-        let pkg = Package::new(self.name.as_ref());
-        let current_version = Version::parse(self.version.as_ref())?;
-
+        let pkg = Package::new(self.name.as_ref(), self.version.as_ref())?;
         let client = http_client::new(DefaultHttpClient {}, self.timeout);
 
         // If the interval is zero, don't use the cache file
         let latest_version = if self.interval.is_zero() {
-            match R::get_latest_version(client, &pkg, &current_version)? {
+            match R::get_latest_version(client, &pkg)? {
                 Some(v) => v,
                 None => return Ok(None),
             }
@@ -359,7 +357,7 @@ impl<R: Registry, N: AsRef<str>, V: AsRef<str>> Check for UpdateInformer<R, N, V
                 // This is needed to update mtime of the file
                 latest_version_file.recreate_file()?;
 
-                match R::get_latest_version(client, &pkg, &current_version)? {
+                match R::get_latest_version(client, &pkg)? {
                     Some(v) => {
                         latest_version_file.write_version(&v)?;
                         v
@@ -372,8 +370,7 @@ impl<R: Registry, N: AsRef<str>, V: AsRef<str>> Check for UpdateInformer<R, N, V
         };
 
         let latest_version = Version::parse(latest_version)?;
-
-        if latest_version > current_version {
+        if &latest_version > pkg.version() {
             return Ok(Some(latest_version));
         }
 
@@ -488,7 +485,7 @@ mod tests {
     const LATEST_VERSION: &str = "3.1.1";
 
     fn mock_crates(pkg: &str) -> Mock {
-        let pkg = Package::new(pkg);
+        let pkg = Package::new(pkg, CURRENT_VERSION).unwrap();
         let (mock, _) = crate::test_helper::mock_crates(
             &pkg,
             200,
@@ -501,7 +498,7 @@ mod tests {
     #[test]
     fn no_new_version_with_interval_test() {
         within_test_dir(|_| {
-            let informer = crate::new(Crates, PKG_NAME, CURRENT_VERSION);
+            let informer = new(Crates, PKG_NAME, CURRENT_VERSION);
             let result = informer.check_version();
 
             assert!(result.is_ok());
@@ -513,7 +510,7 @@ mod tests {
     fn no_new_version_on_registry_test() {
         within_test_dir(|_| {
             let _mock = mock_crates(PKG_NAME);
-            let informer = crate::new(Crates, PKG_NAME, LATEST_VERSION).interval(Duration::ZERO);
+            let informer = new(Crates, PKG_NAME, LATEST_VERSION).interval(Duration::ZERO);
             let result = informer.check_version();
 
             assert!(result.is_ok());
@@ -525,7 +522,7 @@ mod tests {
     fn check_version_on_crates_test() {
         within_test_dir(|_| {
             let _mock = mock_crates(PKG_NAME);
-            let informer = crate::new(Crates, PKG_NAME, CURRENT_VERSION).interval(Duration::ZERO);
+            let informer = new(Crates, PKG_NAME, CURRENT_VERSION).interval(Duration::ZERO);
             let result = informer.check_version();
             let version = Version::parse(LATEST_VERSION).expect("parse version");
 
@@ -539,7 +536,7 @@ mod tests {
         within_test_dir(|version_file| {
             fs::write(version_file, "4.0.0").expect("create file");
 
-            let informer = crate::new(Crates, PKG_NAME, CURRENT_VERSION);
+            let informer = new(Crates, PKG_NAME, CURRENT_VERSION);
             let result = informer.check_version();
             let version = Version::parse("4.0.0").expect("parse version");
 
@@ -553,7 +550,7 @@ mod tests {
         within_test_dir(|version_file| {
             assert!(!version_file.exists());
 
-            let informer = crate::new(Crates, PKG_NAME, CURRENT_VERSION);
+            let informer = new(Crates, PKG_NAME, CURRENT_VERSION);
             let result = informer.check_version();
             assert!(result.is_ok());
             assert!(version_file.exists());
@@ -569,7 +566,7 @@ mod tests {
             assert!(!version_file.exists());
 
             let _mock = mock_crates(PKG_NAME);
-            let informer = crate::new(Crates, PKG_NAME, CURRENT_VERSION).interval(Duration::ZERO);
+            let informer = new(Crates, PKG_NAME, CURRENT_VERSION).interval(Duration::ZERO);
             let result = informer.check_version();
 
             assert!(result.is_ok());
@@ -581,7 +578,7 @@ mod tests {
     fn check_version_with_string_name_test() {
         within_test_dir(|_| {
             let pkg_name = format!("{}/{}", "owner", PKG_NAME);
-            let informer = crate::new(Crates, pkg_name, CURRENT_VERSION);
+            let informer = new(Crates, pkg_name, CURRENT_VERSION);
             let result = informer.check_version();
 
             assert!(result.is_ok());
@@ -592,7 +589,7 @@ mod tests {
     fn check_version_with_string_version_test() {
         within_test_dir(|_| {
             let version = String::from(CURRENT_VERSION);
-            let informer = crate::new(Crates, PKG_NAME, version);
+            let informer = new(Crates, PKG_NAME, version);
             let result = informer.check_version();
 
             assert!(result.is_ok());
@@ -604,7 +601,7 @@ mod tests {
         within_test_dir(|_| {
             let pkg_name = format!("{}/{}", "owner", PKG_NAME);
             let version = String::from(CURRENT_VERSION);
-            let informer = crate::new(Crates, &pkg_name, &version);
+            let informer = new(Crates, &pkg_name, &version);
             let result = informer.check_version();
 
             assert!(result.is_ok());
@@ -614,7 +611,7 @@ mod tests {
     #[test]
     fn fake_check_version_test() {
         let version = "1.0.0";
-        let informer = crate::fake(Crates, PKG_NAME, CURRENT_VERSION, version)
+        let informer = fake(Crates, PKG_NAME, CURRENT_VERSION, version)
             .interval(Duration::ZERO)
             .timeout(Duration::ZERO);
         let result = informer.check_version();

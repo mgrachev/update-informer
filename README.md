@@ -178,14 +178,14 @@ informer.check_version();
 You can implement your own registry to check updates. For example:
 
 ```rust
-use update_informer::{http_client::{HttpClient, SendRequest}, registry, Check, Package, Registry, Result, Version};
+use update_informer::{http_client::{HttpClient, SendRequest}, registry, Check, Package, Registry, Result};
 
 struct YourOwnRegistry;
 
 impl Registry for YourOwnRegistry {
     const NAME: &'static str = "your_own_registry";
 
-    fn get_latest_version<T: SendRequest>(_http_client: HttpClient<T>, pkg: &Package, _current_version: &Version) -> Result<Option<String>> {
+    fn get_latest_version<T: SendRequest>(_http_client: HttpClient<T>, pkg: &Package) -> Result<Option<String>> {
         let url = format!("https://your_own_registry.com/{}/latest-version", pkg);
         
         let result = ureq::get(&url).call()?.into_string()?;
