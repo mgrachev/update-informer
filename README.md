@@ -199,6 +199,31 @@ let informer = update_informer::new(YourOwnRegistry, "package_name", "0.1.0");
 informer.check_version();
 ```
 
+## Using your own HTTP client
+
+You can use your own HTTP client to check updates. For example:
+
+```rust
+use std::time::Duration;
+use serde::de::DeserializeOwned;
+use update_informer::{http_client::SendRequest, registry, Check};
+
+struct AnotherHttpClient;
+
+impl SendRequest for AnotherHttpClient {
+    fn get<T: DeserializeOwned>(
+        _url: &str,
+        _timeout: Duration,
+        _headers: Option<(&str, &str)>,
+    ) -> update_informer::Result<T> {
+        todo!()
+    }
+}
+
+let informer = update_informer::new(registry::Crates, "crate_name", "0.1.0").http_client(AnotherHttpClient);
+informer.check_version();
+```
+
 ## Example
 
 <details>

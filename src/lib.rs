@@ -151,6 +151,31 @@
 //! informer.check_version();
 //! ```
 //!
+//! ## Using your own HTTP client
+//!
+//! You can use your own HTTP client to check updates. For example:
+//!
+//! ```rust
+//! use std::time::Duration;
+//! use serde::de::DeserializeOwned;
+//! use update_informer::{http_client::SendRequest, registry, Check};
+//!
+//! struct AnotherHttpClient;
+//!
+//! impl SendRequest for AnotherHttpClient {
+//!     fn get<T: DeserializeOwned>(
+//!         _url: &str,
+//!         _timeout: Duration,
+//!         _headers: Option<(&str, &str)>,
+//!     ) -> update_informer::Result<T> {
+//!         todo!()
+//!     }
+//! }
+//!
+//! let informer = update_informer::new(registry::Crates, "crate_name", "0.1.0").http_client(AnotherHttpClient);
+//! informer.check_version();
+//! ```
+//!
 //! ## Tests
 //!
 //! In order not to check for updates in tests, you can use the [`FakeUpdateInformer::check_version`] function, which returns the desired version.
@@ -211,7 +236,10 @@
 //! [`reqwest`]: https://github.com/seanmonstar/reqwest
 
 #[doc = include_str!("../README.md")]
-use crate::{http_client::DefaultHttpClient, version_file::VersionFile};
+use crate::{
+    http_client::{DefaultHttpClient, SendRequest},
+    version_file::VersionFile,
+};
 use std::time::Duration;
 
 pub use package::Package;
@@ -236,16 +264,25 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 pub trait Check {
     /// Checks for a new version in the registry.
-    fn check_version(&self) -> Result<Option<Version>> {
+    fn check_version(self) -> Result<Option<Version>>
+    where
+        Self: Sized,
+    {
         Ok(None)
     }
 }
 
 /// Checks for a new version on Crates.io, GitHub, Npm and PyPi.
-pub struct UpdateInformer<R: Registry, N: AsRef<str>, V: AsRef<str>> {
+pub struct UpdateInformer<
+    R: Registry,
+    N: AsRef<str>,
+    V: AsRef<str>,
+    S: SendRequest = DefaultHttpClient,
+> {
     _registry: R,
     name: N,
     version: V,
+    http_client: S,
     interval: Duration,
     timeout: Duration,
 }
@@ -277,12 +314,13 @@ where
         _registry: registry,
         name,
         version,
+        http_client: DefaultHttpClient {},
         interval: Duration::from_secs(60 * 60 * 24), // Once a day
         timeout: Duration::from_secs(5),
     }
 }
 
-impl<R: Registry, N: AsRef<str>, V: AsRef<str>> UpdateInformer<R, N, V> {
+impl<R: Registry, N: AsRef<str>, V: AsRef<str>, S: SendRequest> UpdateInformer<R, N, V, S> {
     /// Sets an interval how often to check for a new version.
     ///
     /// # Arguments
@@ -324,9 +362,50 @@ impl<R: Registry, N: AsRef<str>, V: AsRef<str>> UpdateInformer<R, N, V> {
     pub fn timeout(self, timeout: Duration) -> Self {
         Self { timeout, ..self }
     }
+
+    /// Sets an HTTP client to send request to the registry.
+    ///
+    /// # Arguments
+    ///
+    /// * `http_client` - A type that implements the `SendRequest` trait.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use std::time::Duration;
+    /// use serde::de::DeserializeOwned;
+    /// use update_informer::{http_client::SendRequest, registry, Check};
+    ///
+    /// struct AnotherHttpClient;
+    ///
+    /// impl SendRequest for AnotherHttpClient {
+    ///     fn get<T: DeserializeOwned>(
+    ///         _url: &str,
+    ///         _timeout: Duration,
+    ///         _headers: Option<(&str, &str)>,
+    ///     ) -> update_informer::Result<T> {
+    ///         todo!()
+    ///     }
+    /// }
+    ///
+    /// let informer = update_informer::new(registry::Crates, "crate_name", "0.1.0").http_client(AnotherHttpClient);
+    /// informer.check_version();
+    /// ```
+    pub fn http_client<C: SendRequest>(self, http_client: C) -> UpdateInformer<R, N, V, C> {
+        UpdateInformer {
+            _registry: self._registry,
+            name: self.name,
+            version: self.version,
+            interval: self.interval,
+            timeout: self.timeout,
+            http_client,
+        }
+    }
 }
 
-impl<R: Registry, N: AsRef<str>, V: AsRef<str>> Check for UpdateInformer<R, N, V> {
+impl<R: Registry, N: AsRef<str>, V: AsRef<str>, S: SendRequest> Check
+    for UpdateInformer<R, N, V, S>
+{
     /// Checks for a new version in the registry.
     ///
     /// # Examples
@@ -339,9 +418,9 @@ impl<R: Registry, N: AsRef<str>, V: AsRef<str>> Check for UpdateInformer<R, N, V
     /// let informer = update_informer::new(registry::Crates, "crate_name", "0.1.0");
     /// informer.check_version();
     /// ```
-    fn check_version(&self) -> Result<Option<Version>> {
+    fn check_version(self) -> Result<Option<Version>> {
         let pkg = Package::new(self.name.as_ref(), self.version.as_ref())?;
-        let client = http_client::new(DefaultHttpClient {}, self.timeout);
+        let client = http_client::new(self.http_client, self.timeout);
 
         // If the interval is zero, don't use the cache file
         let latest_version = if self.interval.is_zero() {
@@ -466,7 +545,7 @@ impl<V: AsRef<str>> Check for FakeUpdateInformer<V> {
     /// assert!(version.is_some());
     /// assert_eq!(version.unwrap().to_string(), "v1.0.0");
     /// ```
-    fn check_version(&self) -> Result<Option<Version>> {
+    fn check_version(self) -> Result<Option<Version>> {
         let version = Version::parse(self.version.as_ref())?;
 
         Ok(Some(version))
