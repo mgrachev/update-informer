@@ -2,7 +2,7 @@ use crate::{http_client::SendRequest, Result};
 use serde::de::DeserializeOwned;
 use std::time::Duration;
 
-pub(crate) struct UreqHttpClient;
+pub struct UreqHttpClient;
 
 impl SendRequest for UreqHttpClient {
     fn get<T: DeserializeOwned>(
