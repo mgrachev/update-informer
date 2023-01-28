@@ -25,7 +25,7 @@ pub struct Crates;
 
 #[cfg(not(test))]
 fn get_base_url() -> String {
-    format!("{}/api/v1/crates", REGISTRY_URL)
+    format!("{REGISTRY_URL}/api/v1/crates")
 }
 
 #[cfg(test)]

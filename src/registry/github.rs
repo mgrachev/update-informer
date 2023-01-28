@@ -20,7 +20,7 @@ pub struct GitHub;
 
 #[cfg(not(test))]
 fn get_base_url() -> String {
-    format!("{}/repos", REGISTRY_URL)
+    format!("{REGISTRY_URL}/repos")
 }
 
 #[cfg(test)]

@@ -35,7 +35,7 @@ impl<'a> Package<'a> {
     /// Return a name suitable for storing on filesystem, that will include
     /// owner if it is set.
     pub(crate) fn name(&self) -> String {
-        let owner = self.owner.map(|s| format!("{}-", s)).unwrap_or_default();
+        let owner = self.owner.map(|s| format!("{s}-")).unwrap_or_default();
         format!("{}{}", owner, self.name)
     }
 

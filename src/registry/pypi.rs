@@ -26,7 +26,7 @@ pub struct PyPI;
 
 #[cfg(not(test))]
 fn get_base_url() -> String {
-    format!("{}/pypi", REGISTRY_URL)
+    format!("{REGISTRY_URL}/pypi")
 }
 
 #[cfg(test)]
