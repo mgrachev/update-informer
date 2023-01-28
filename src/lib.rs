@@ -491,39 +491,10 @@ where
 }
 
 impl<V: AsRef<str>> FakeUpdateInformer<V> {
-    /// Constructs a new `FakeUpdateInformer`.
-    ///
-    /// # Arguments
-    ///
-    /// * `registry` - A registry service such as Crates.io or GitHub (not used).
-    /// * `name` - A project name (not used).
-    /// * `version` - Current version of the project (not used).
-    /// * `interval` - An interval how often to check for a new version (not used).
-    /// * `new_version` - A desired version.
-    ///
-    /// # Examples
-    ///
-    /// ```rust
-    /// use update_informer::{registry, Check, FakeUpdateInformer};
-    ///
-    /// let informer = FakeUpdateInformer::new(registry::Crates, "repo", "0.1.0", "1.0.0");
-    /// ```
-    #[deprecated(since = "0.5.0", note = "Use `update_informer::fake` instead")]
-    pub fn new<R, N>(registry: R, name: N, version: V, new_version: V) -> Self
-    where
-        R: Registry,
-        N: AsRef<str>,
-        V: AsRef<str>,
-    {
-        crate::fake(registry, name, version, new_version)
-    }
-
-    /// Returns `FakeUpdateInformer`.
     pub fn interval(self, _interval: Duration) -> Self {
         self
     }
 
-    /// Returns `FakeUpdateInformer`.
     pub fn timeout(self, _timeout: Duration) -> Self {
         self
     }
