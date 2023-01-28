@@ -66,7 +66,7 @@ mod tests {
     #[test]
     fn failure_test() {
         let pkg = Package::new(PKG_NAME, RAW_VERSION).unwrap();
-        let client = http_client::new(http_client::UreqHttpClient, TIMEOUT);
+        let client = http_client::new(http_client::DefaultHttpClient {}, TIMEOUT);
         let data_path = format!("{}/not_found.html", FIXTURES_PATH);
         let _mock = mock_pypi(&pkg, 404, &data_path);
 
@@ -77,7 +77,7 @@ mod tests {
     #[test]
     fn success_test() {
         let pkg = Package::new(PKG_NAME, RAW_VERSION).unwrap();
-        let client = http_client::new(http_client::UreqHttpClient, TIMEOUT);
+        let client = http_client::new(http_client::DefaultHttpClient {}, TIMEOUT);
         let data_path = format!("{}/release.json", FIXTURES_PATH);
         let (_mock, _data) = mock_pypi(&pkg, 200, &data_path);
 

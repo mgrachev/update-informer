@@ -1,8 +1,8 @@
 use crate::{Result, Version};
 use std::fmt::{Display, Formatter};
 
-#[derive(Debug, PartialEq, Eq)]
 /// A package representation.
+#[derive(Debug, PartialEq, Eq)]
 pub struct Package<'a> {
     owner: Option<&'a str>,
     name: &'a str,
@@ -32,14 +32,14 @@ impl<'a> Package<'a> {
         Ok(pkg)
     }
 
-    /// Return a name suitable for storing on filesystem, that will include
+    /// Returns a name suitable for storing on filesystem, that will include
     /// owner if it is set.
     pub(crate) fn name(&self) -> String {
         let owner = self.owner.map(|s| format!("{s}-")).unwrap_or_default();
         format!("{}{}", owner, self.name)
     }
 
-    /// Return the parsed version of the package
+    /// Returns the parsed version of the package
     pub fn version(&self) -> &Version {
         &self.version
     }

@@ -65,7 +65,7 @@ mod tests {
     #[test]
     fn failure_test() {
         let pkg = Package::new(PKG_NAME, RAW_VERSION).unwrap();
-        let client = http_client::new(http_client::UreqHttpClient, TIMEOUT);
+        let client = http_client::new(http_client::DefaultHttpClient {}, TIMEOUT);
         let data_path = format!("{}/not_found.json", FIXTURES_PATH);
         let _mock = mock_crates(&pkg, 404, &data_path);
         let result = Crates::get_latest_version(client, &pkg);
@@ -75,7 +75,7 @@ mod tests {
     #[test]
     fn success_test() {
         let pkg = Package::new(PKG_NAME, RAW_VERSION).unwrap();
-        let client = http_client::new(http_client::UreqHttpClient, TIMEOUT);
+        let client = http_client::new(http_client::DefaultHttpClient {}, TIMEOUT);
         let data_path = format!("{}/versions.json", FIXTURES_PATH);
         let (_mock, data) = mock_crates(&pkg, 200, &data_path);
 

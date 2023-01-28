@@ -1,241 +1,5 @@
-//! # Overview
-//! Update informer for CLI applications written in Rust. It checks for a new version on [`Crates.io`], [`GitHub`], [`Npm`] and [`PyPI`].
-//!
-//! ## Benefits
-//! * Support of [Crates.io](#cratesio), [GitHub](#github), [Npm](#npm) and [PyPI](#pypi).
-//! * [Ability to implement your own registry to check updates](#implementing-your-own-registry).
-//! * Configurable [check frequency](#interval) and [request timeout](#request-timeout).
-//! * Minimum dependencies - only [`directories`], [`semver`], [`serde`] and an HTTP client ([`ureq`] or [`reqwest`]).
-//!
-//! ## Usage
-//!
-//! By default, `update-informer` can only check on [`Crates.io`] and uses [`ureq`] as a default HTTP client.
-//! To enable support for other registries or change the HTTP client, use `features`:
-//!
-//! ```toml
-//! [dependencies]
-//! update-informer = { version = "0.5.0", default_features = false, features = ["github", "reqwest"] }
-//! ```
-//!
-//! Available features:
-//!
-//! | Name        | Type        | Default? |
-//! |-------------|-------------|----------|
-//! | cargo       | Registry    | Yes      |
-//! | github      | Registry    | No       |
-//! | npm         | Registry    | No       |
-//! | pypi        | Registry    | No       |
-//! | [`ureq`]    | HTTP client | Yes      |
-//! | [`reqwest`] | HTTP client | No       |
-//!
-//! ## Crates.io
-//!
-//! To check for a new version on Crates.io, use the [`UpdateInformer::check_version`] function. This function takes the project name and current version:
-//!
-//! ```rust
-//! use update_informer::{registry, Check};
-//!
-//! let informer = update_informer::new(registry::Crates, "crate_name", "0.1.0");
-//! if let Some(version) = informer.check_version().ok().flatten() {
-//!     println!("New version is available: {}", version);
-//! }
-//! ```
-//!
-//! Also, you can take the name and version of the project from `Cargo` using environment variables:
-//!
-//! ```rust
-//! use update_informer::{registry, Check};
-//!
-//! let name = env!("CARGO_PKG_NAME");
-//! let version = env!("CARGO_PKG_VERSION");
-//! update_informer::new(registry::Crates, name, version).check_version();
-//! ```
-//!
-//! ## Interval
-//!
-//! Note that the first check will start only after the interval has expired.
-//! By default, the interval is 24 hours, but you can change it:
-//!
-//! ```rust
-//! use std::time::Duration;
-//! use update_informer::{registry, Check};
-//!
-//! const EVERY_HOUR: Duration = Duration::from_secs(60 * 60);
-//!
-//! let informer = update_informer::new(registry::Crates, "crate_name", "0.1.0").interval(EVERY_HOUR);
-//! informer.check_version(); // The check will start only after an hour
-//! ```
-//!
-//! ## Cache file
-//!
-//! By default, `update-informer` creates a file in the cache directory to avoid spam requests to the registry API.
-//!
-//! In order not to cache requests, use a zero interval:
-//!
-//! ```rust
-//! use std::time::Duration;
-//! use update_informer::{registry, Check};
-//!
-//! let informer = update_informer::new(registry::Crates, "crate_name", "0.1.0").interval(Duration::ZERO);
-//! informer.check_version();
-//! ```
-//!
-//! ## Request timeout
-//!
-//! You can also change the request timeout. By default, it is 5 seconds:
-//!
-//! ```rust
-//! use std::time::Duration;
-//! use update_informer::{registry, Check};
-//!
-//! const THIRTY_SECONDS: Duration = Duration::from_secs(30);
-//!
-//! let informer = update_informer::new(registry::Crates, "crate_name", "0.1.0").timeout(THIRTY_SECONDS);
-//! informer.check_version();
-//! ```
-//!
-//! ## GitHub
-//!
-//! To check for a new version on GitHub (note that the project name must contain the owner):
-//!
-//! ```rust
-//! use update_informer::{registry, Check};
-//!
-//! let informer = update_informer::new(registry::GitHub, "owner/repo", "0.1.0");
-//! informer.check_version();
-//! ```
-//! ## Npm
-//!
-//! To check for a new version on Npm:
-//!
-//! ```rust
-//! use update_informer::{registry, Check};
-//!
-//! let informer = update_informer::new(registry::Npm, "package_name", "0.1.0");
-//! informer.check_version();
-//! ```
-//!
-//! ## PyPi
-//!
-//! To check for a new version on PyPI:
-//!
-//! ```rust
-//! use update_informer::{registry, Check};
-//!
-//! let informer = update_informer::new(registry::PyPI, "package_name", "0.1.0");
-//! informer.check_version();
-//! ```
-//!
-//! ## Implementing your own registry
-//!
-//! You can implement your own registry to check updates. For example:
-//!
-//! ```rust
-//! use update_informer::{http_client::{HttpClient, SendRequest}, registry, Check, Package, Registry, Result};
-//!
-//! struct YourOwnRegistry;
-//!
-//! impl Registry for YourOwnRegistry {
-//!     const NAME: &'static str = "your_own_registry";
-//!
-//!     fn get_latest_version<T: SendRequest>(_http_client: HttpClient<T>, pkg: &Package) -> Result<Option<String>> {
-//!         let url = format!("https://your_own_registry.com/{}/latest-version", pkg);
-//!         let result = ureq::get(&url).call()?.into_string()?;
-//!         let version = result.trim().to_string();
-//!
-//!         Ok(Some(version))
-//!     }
-//! }
-//!
-//! let informer = update_informer::new(YourOwnRegistry, "package_name", "0.1.0");
-//! informer.check_version();
-//! ```
-//!
-//! ## Using your own HTTP client
-//!
-//! You can use your own HTTP client to check updates. For example:
-//!
-//! ```rust
-//! use std::time::Duration;
-//! use serde::de::DeserializeOwned;
-//! use update_informer::{http_client::SendRequest, registry, Check};
-//!
-//! struct AnotherHttpClient;
-//!
-//! impl SendRequest for AnotherHttpClient {
-//!     fn get<T: DeserializeOwned>(
-//!         _url: &str,
-//!         _timeout: Duration,
-//!         _headers: Option<(&str, &str)>,
-//!     ) -> update_informer::Result<T> {
-//!         todo!()
-//!     }
-//! }
-//!
-//! let informer = update_informer::new(registry::Crates, "crate_name", "0.1.0").http_client(AnotherHttpClient);
-//! informer.check_version();
-//! ```
-//!
-//! ## Tests
-//!
-//! In order not to check for updates in tests, you can use the [`FakeUpdateInformer::check_version`] function, which returns the desired version.
-//!
-//! Example of usage in unit tests:
-//!
-//! ```rust
-//! use update_informer::{registry, Check};
-//!
-//! let name = "crate_name";
-//! let version = "0.1.0";
-//!
-//! #[cfg(not(test))]
-//! let informer = update_informer::new(registry::Crates, name, version);
-//!
-//! #[cfg(test)]
-//! let informer = update_informer::fake(registry::Crates, name, version, "1.0.0");
-//!
-//! if let Some(version) = informer.check_version().ok().flatten() {
-//!     println!("New version is available: {}", version);
-//! }
-//! ```
-//!
-//! ## Integration tests
-//!
-//! To use the [`FakeUpdateInformer::check_version`] function in integration tests, you must first add the feature flag to `Cargo.toml`:
-//!
-//! ```toml
-//! [features]
-//! stub_check_version = []
-//! ```
-//!
-//! Then use this feature flag in your code and integration tests:
-//!
-//! ```rust
-//! use update_informer::{registry, Check};
-//!
-//! let name = "crate_name";
-//! let version = "0.1.0";
-//!
-//! #[cfg(not(feature = "stub_check_version"))]
-//! let informer = update_informer::new(registry::Crates, name, version);
-//!
-//! #[cfg(feature = "stub_check_version")]
-//! let informer = update_informer::fake(Crates, name, version, "1.0.0");
-//!
-//! informer.check_version();
-//! ```
-//!
-//! [`Crates.io`]: https://crates.io
-//! [`GitHub`]: https://github.com
-//! [`Npm`]: https://www.npmjs.com
-//! [`PyPI`]: https://pypi.org
-//! [`directories`]: https://github.com/dirs-dev/directories-rs
-//! [`ureq`]: https://github.com/algesten/ureq
-//! [`semver`]: https://github.com/dtolnay/semver
-//! [`serde`]: https://github.com/serde-rs/serde
-//! [`reqwest`]: https://github.com/seanmonstar/reqwest
+#![doc = include_str!("../README.md")]
 
-#[doc = include_str!("../README.md")]
 use crate::{
     http_client::{DefaultHttpClient, SendRequest},
     version_file::VersionFile,
@@ -277,12 +41,12 @@ pub struct UpdateInformer<
     R: Registry,
     N: AsRef<str>,
     V: AsRef<str>,
-    S: SendRequest = DefaultHttpClient,
+    H: SendRequest = DefaultHttpClient,
 > {
     _registry: R,
     name: N,
     version: V,
-    http_client: S,
+    http_client: H,
     interval: Duration,
     timeout: Duration,
 }
@@ -320,7 +84,13 @@ where
     }
 }
 
-impl<R: Registry, N: AsRef<str>, V: AsRef<str>, S: SendRequest> UpdateInformer<R, N, V, S> {
+impl<R, N, V, H> UpdateInformer<R, N, V, H>
+where
+    R: Registry,
+    N: AsRef<str>,
+    V: AsRef<str>,
+    H: SendRequest,
+{
     /// Sets an interval how often to check for a new version.
     ///
     /// # Arguments
@@ -336,7 +106,7 @@ impl<R: Registry, N: AsRef<str>, V: AsRef<str>, S: SendRequest> UpdateInformer<R
     /// const EVERY_HOUR: Duration = Duration::from_secs(60 * 60);
     ///
     /// let informer = update_informer::new(registry::Crates, "crate_name", "0.1.0").interval(EVERY_HOUR);
-    /// informer.check_version(); // The check will start only after an hour
+    /// let _ = informer.check_version(); // The check will start only after an hour
     /// ```
     pub fn interval(self, interval: Duration) -> Self {
         Self { interval, ..self }
@@ -357,7 +127,7 @@ impl<R: Registry, N: AsRef<str>, V: AsRef<str>, S: SendRequest> UpdateInformer<R
     /// const THIRTY_SECONDS: Duration = Duration::from_secs(30);
     ///
     /// let informer = update_informer::new(registry::Crates, "crate_name", "0.1.0").timeout(THIRTY_SECONDS);
-    /// informer.check_version();
+    /// let _ = informer.check_version();
     /// ```
     pub fn timeout(self, timeout: Duration) -> Self {
         Self { timeout, ..self }
@@ -372,24 +142,26 @@ impl<R: Registry, N: AsRef<str>, V: AsRef<str>, S: SendRequest> UpdateInformer<R
     /// # Examples
     ///
     /// ```rust
+    /// use isahc::ReadResponseExt;
     /// use std::time::Duration;
     /// use serde::de::DeserializeOwned;
     /// use update_informer::{http_client::SendRequest, registry, Check};
     ///
-    /// struct AnotherHttpClient;
+    /// struct YourOwnHttpClient;
     ///
-    /// impl SendRequest for AnotherHttpClient {
+    /// impl SendRequest for YourOwnHttpClient {
     ///     fn get<T: DeserializeOwned>(
-    ///         _url: &str,
+    ///         url: &str,
     ///         _timeout: Duration,
     ///         _headers: Option<(&str, &str)>,
     ///     ) -> update_informer::Result<T> {
-    ///         todo!()
+    ///         let json = isahc::get(url)?.json()?;
+    ///         Ok(json)
     ///     }
     /// }
     ///
-    /// let informer = update_informer::new(registry::Crates, "crate_name", "0.1.0").http_client(AnotherHttpClient);
-    /// informer.check_version();
+    /// let informer = update_informer::new(registry::Crates, "crate_name", "0.1.0").http_client(YourOwnHttpClient);
+    /// let _ = informer.check_version();
     /// ```
     pub fn http_client<C: SendRequest>(self, http_client: C) -> UpdateInformer<R, N, V, C> {
         UpdateInformer {
@@ -403,8 +175,12 @@ impl<R: Registry, N: AsRef<str>, V: AsRef<str>, S: SendRequest> UpdateInformer<R
     }
 }
 
-impl<R: Registry, N: AsRef<str>, V: AsRef<str>, S: SendRequest> Check
-    for UpdateInformer<R, N, V, S>
+impl<R, N, V, H> Check for UpdateInformer<R, N, V, H>
+where
+    R: Registry,
+    N: AsRef<str>,
+    V: AsRef<str>,
+    H: SendRequest,
 {
     /// Checks for a new version in the registry.
     ///
@@ -416,7 +192,7 @@ impl<R: Registry, N: AsRef<str>, V: AsRef<str>, S: SendRequest> Check
     /// use update_informer::{registry, Check};
     ///
     /// let informer = update_informer::new(registry::Crates, "crate_name", "0.1.0");
-    /// informer.check_version();
+    /// let _ = informer.check_version();
     /// ```
     fn check_version(self) -> Result<Option<Version>> {
         let pkg = Package::new(self.name.as_ref(), self.version.as_ref())?;
@@ -470,7 +246,7 @@ pub struct FakeUpdateInformer<V: AsRef<str>> {
 /// * `name` - A project name (not used).
 /// * `version` - Current version of the project (not used).
 /// * `interval` - An interval how often to check for a new version (not used).
-/// * `new_version` - A desired version.
+/// * `new_version` - The desired version.
 ///
 /// # Examples
 ///
@@ -499,7 +275,7 @@ impl<V: AsRef<str>> FakeUpdateInformer<V> {
         self
     }
 
-    pub fn http_client<S: SendRequest>(self, _http_client: S) -> Self {
+    pub fn http_client<C: SendRequest>(self, _http_client: C) -> Self {
         self
     }
 }

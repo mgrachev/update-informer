@@ -1,6 +1,7 @@
 use crate::Result;
 use std::fmt::{Display, Formatter};
 
+/// A version representation.
 #[derive(Debug, Clone, PartialEq, PartialOrd, Eq)]
 pub struct Version(semver::Version);
 
@@ -13,7 +14,7 @@ impl Version {
         Ok(Self(version))
     }
 
-    /// Return `semver::Version`.
+    /// Returns `semver::Version`.
     pub fn semver(&self) -> &semver::Version {
         &self.0
     }
