@@ -32,14 +32,14 @@ pub(crate) fn new<'a, T: SendRequest>(client: T, timeout: Duration) -> HttpClien
 }
 
 impl<'a, T: SendRequest> HttpClient<'a, T> {
-    pub(crate) fn headers(self, headers: (&'a str, &'a str)) -> Self {
+    pub fn headers(self, headers: (&'a str, &'a str)) -> Self {
         Self {
             headers: Some(headers),
             ..self
         }
     }
 
-    pub(crate) fn get<D: DeserializeOwned>(self, url: &str) -> Result<D> {
+    pub fn get<D: DeserializeOwned>(self, url: &str) -> Result<D> {
         T::get(url, self.timeout, self.headers)
     }
 }
