@@ -498,6 +498,10 @@ impl<V: AsRef<str>> FakeUpdateInformer<V> {
     pub fn timeout(self, _timeout: Duration) -> Self {
         self
     }
+
+    pub fn http_client<S: SendRequest>(self, _http_client: S) -> Self {
+        self
+    }
 }
 
 impl<V: AsRef<str>> Check for FakeUpdateInformer<V> {
