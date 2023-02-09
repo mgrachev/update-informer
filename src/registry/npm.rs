@@ -53,7 +53,7 @@ mod tests {
     fn failure_test() {
         let raw_version = "0.1.0";
         let pkg = Package::new(PKG_NAME, raw_version).unwrap();
-        let client = http_client::new(http_client::UreqHttpClient, TIMEOUT);
+        let client = http_client::new(http_client::DefaultHttpClient {}, TIMEOUT);
         let data_path = format!("{}/not_found.html", FIXTURES_PATH);
         let _mock = mock_npm(&pkg, 404, &data_path);
 
@@ -65,7 +65,7 @@ mod tests {
     fn success_test() {
         let raw_version = "1.6.2";
         let pkg = Package::new(PKG_NAME, raw_version).unwrap();
-        let client = http_client::new(http_client::UreqHttpClient, TIMEOUT);
+        let client = http_client::new(http_client::DefaultHttpClient {}, TIMEOUT);
         let data_path = format!("{}/latest.json", FIXTURES_PATH);
         let (_mock, _data) = mock_npm(&pkg, 200, &data_path);
 

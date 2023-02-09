@@ -10,17 +10,33 @@ env:
 jobs:
   check-all:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        registry:
+          - crates
+          - github
+          - npm
+          - pypi
+        http_client:
+          - ureq
+          - reqwest
     steps:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2.2.0
-      - run: cargo check
+      - run: cargo check --no-default-features --features ${{ matrix.registry }},${{ matrix.http_client }}
       - run: cargo fmt --all --check
-      - run: cargo clippy --all-features -- -D warnings
-      - run: cargo build --release --all-features
+      - run: cargo clippy --no-default-features --features ${{ matrix.registry }},${{ matrix.http_client }} -- -D warnings
+      - run: cargo build --release --no-default-features --features ${{ matrix.registry }},${{ matrix.http_client }}
 
   test-coverage:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        all_registries: ["crates,github,npm,pypi"]
+        http_client:
+          - ureq
+          - reqwest
     steps:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@nightly
@@ -36,7 +52,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2.2.0
         with:
           key: ${{ env.GRCOV_VERSION }}
-      - run: cargo test --all-features --no-fail-fast
+      - run: cargo test --no-fail-fast --no-default-features --features ${{ matrix.all_registries }},${{ matrix.http_client }}
         env:
           CARGO_INCREMENTAL: '0'
           RUSTFLAGS: |

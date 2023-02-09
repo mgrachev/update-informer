@@ -32,7 +32,7 @@ pub trait Registry {
     ///
     /// # Arguments
     ///
-    /// * `http_client` - An http client to send requests to the registry.
+    /// * `http_client` - An HTTP client to send requests to the registry.
     /// * `pkg` - A `Package` struct.
     /// * `current_version` - The current version of the package.
     fn get_latest_version<T: SendRequest>(

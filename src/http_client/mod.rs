@@ -4,9 +4,9 @@ use std::time::Duration;
 
 #[cfg(feature = "ureq")]
 mod ureq;
-#[cfg(feature = "ureq")]
+#[cfg(all(feature = "ureq", not(feature = "reqwest")))]
 pub use crate::http_client::ureq::UreqHttpClient;
-#[cfg(feature = "ureq")]
+#[cfg(all(feature = "ureq", not(feature = "reqwest")))]
 pub type DefaultHttpClient = UreqHttpClient;
 
 #[cfg(feature = "reqwest")]
@@ -15,6 +15,13 @@ mod reqwest;
 pub use crate::http_client::reqwest::ReqwestHttpClient;
 #[cfg(all(feature = "reqwest", not(feature = "ureq")))]
 pub type DefaultHttpClient = ReqwestHttpClient;
+
+#[cfg(all(not(feature = "ureq"), not(feature = "reqwest")))]
+mod undefined;
+#[cfg(all(not(feature = "ureq"), not(feature = "reqwest")))]
+pub use crate::http_client::undefined::UndefinedHttpClient;
+#[cfg(all(not(feature = "ureq"), not(feature = "reqwest")))]
+pub type DefaultHttpClient = UndefinedHttpClient;
 
 /// An HTTP client to send requests to the registry.
 pub struct HttpClient<'a, T: SendRequest> {

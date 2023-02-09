@@ -62,7 +62,7 @@ mod tests {
     fn failure_test() {
         let raw_version = "0.1.0";
         let pkg = Package::new(PKG_NAME, raw_version).unwrap();
-        let client = http_client::new(http_client::UreqHttpClient, TIMEOUT);
+        let client = http_client::new(http_client::DefaultHttpClient {}, TIMEOUT);
         let data_path = format!("{}/not_found.json", FIXTURES_PATH);
         let _mock = mock_github(&pkg, 404, &data_path);
 
@@ -74,7 +74,7 @@ mod tests {
     fn success_test() {
         let raw_version = "1.6.3-canary.0";
         let pkg = Package::new(PKG_NAME, raw_version).unwrap();
-        let client = http_client::new(http_client::UreqHttpClient, TIMEOUT);
+        let client = http_client::new(http_client::DefaultHttpClient {}, TIMEOUT);
         let data_path = format!("{}/release.json", FIXTURES_PATH);
         let (_mock, data) = mock_github(&pkg, 200, &data_path);
 
