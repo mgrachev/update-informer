@@ -44,3 +44,18 @@ colored = "2.0"
 isahc = { version = "1.7", features = ["json"] }
 mockito = "0.31"
 once_cell = "1.10"
+
+[[example]]
+name = "github"
+path = "examples/github.rs"
+required-features = ["github"]
+
+[[example]]
+name = "npm"
+path = "examples/npm.rs"
+required-features = ["npm"]
+
+[[example]]
+name = "pypi"
+path = "examples/pypi.rs"
+required-features = ["pypi"]
