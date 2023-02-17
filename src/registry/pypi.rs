@@ -1,5 +1,5 @@
 use crate::{
-    http_client::{HttpClient, SendRequest},
+    http_client::{GenericHttpClient, HttpClient},
     Package, Registry, Result,
 };
 use serde::Deserialize;
@@ -37,8 +37,8 @@ fn get_base_url() -> String {
 impl Registry for PyPI {
     const NAME: &'static str = "pypi";
 
-    fn get_latest_version<T: SendRequest>(
-        http_client: HttpClient<T>,
+    fn get_latest_version<T: HttpClient>(
+        http_client: GenericHttpClient<T>,
         pkg: &Package,
     ) -> Result<Option<String>> {
         let url = format!("{}/{}/json", get_base_url(), pkg);

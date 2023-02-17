@@ -1,11 +1,11 @@
 use isahc::ReadResponseExt;
 use serde::de::DeserializeOwned;
 use std::time::Duration;
-use update_informer::{http_client::SendRequest, registry, Check};
+use update_informer::{http_client::HttpClient, registry, Check};
 
 struct YourOwnHttpClient;
 
-impl SendRequest for YourOwnHttpClient {
+impl HttpClient for YourOwnHttpClient {
     fn get<T: DeserializeOwned>(
         url: &str,
         _timeout: Duration,

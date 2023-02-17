@@ -22,7 +22,6 @@
 [update-informer]: https://evrone.com/update-informer?utm_source=github&utm_campaign=update-informer
 [Evrone]: https://evrone.com/?utm_source=github&utm_campaign=update-informer
 [turbo]: https://github.com/vercel/turbo
-[ruff]: https://github.com/charliermarsh/ruff
 [reqwest]: https://github.com/seanmonstar/reqwest
 
 [![CI][ci-badge]][ci-url]
@@ -147,7 +146,7 @@ let _ = informer.check_version();
 You can implement your own registry to check updates. For example:
 
 ```rust
-use update_informer::{http_client::{HttpClient, SendRequest}, registry, Check, Package, Registry, Result};
+use update_informer::{http_client::{GenericHttpClient, HttpClient}, registry, Check, Package, Registry, Result};
 
 #[derive(serde::Deserialize)]
 struct Response {
@@ -158,7 +157,7 @@ struct YourOwnRegistry;
 impl Registry for YourOwnRegistry {
     const NAME: &'static str = "your_own_registry";
 
-    fn get_latest_version<T: SendRequest>(http_client: HttpClient<T>, pkg: &Package) -> Result<Option<String>> {
+    fn get_latest_version<T: HttpClient>(http_client: GenericHttpClient<T>, pkg: &Package) -> Result<Option<String>> {
         let url = "https://turbo.build/api/binaries/version";
         let resp = http_client.get::<Response>(&url)?;
 
@@ -166,7 +165,7 @@ impl Registry for YourOwnRegistry {
     }
 }
 
-let informer = update_informer::new(YourOwnRegistry, "package_name", "0.1.0");
+let informer = update_informer::new(YourOwnRegistry, "turbo", "0.1.0");
 informer.check_version();
 ```
 
@@ -178,11 +177,11 @@ You can use your own HTTP client to check updates. For example:
 use isahc::ReadResponseExt;
 use std::time::Duration;
 use serde::de::DeserializeOwned;
-use update_informer::{http_client::SendRequest, registry, Check};
+use update_informer::{http_client::HttpClient, registry, Check};
 
 struct YourOwnHttpClient;
 
-impl SendRequest for YourOwnHttpClient {
+impl HttpClient for YourOwnHttpClient {
     fn get<T: DeserializeOwned>(
         url: &str,
         _timeout: Duration,
@@ -249,7 +248,6 @@ let _ = informer.check_version();
 - [git-cliff]
 - [dotenv-linter]
 - [turbo]
-- [ruff]
 
 ## MSRV
 

@@ -1,5 +1,5 @@
 use crate::{
-    http_client::{HttpClient, SendRequest},
+    http_client::{GenericHttpClient, HttpClient},
     Package, Result,
 };
 
@@ -35,8 +35,8 @@ pub trait Registry {
     /// * `http_client` - An HTTP client to send requests to the registry.
     /// * `pkg` - A `Package` struct.
     /// * `current_version` - The current version of the package.
-    fn get_latest_version<T: SendRequest>(
-        http_client: HttpClient<T>,
+    fn get_latest_version<T: HttpClient>(
+        http_client: GenericHttpClient<T>,
         pkg: &Package,
     ) -> Result<Option<String>>;
 }
