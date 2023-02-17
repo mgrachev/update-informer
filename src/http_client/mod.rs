@@ -24,21 +24,21 @@ pub use crate::http_client::undefined::UndefinedHttpClient;
 pub type DefaultHttpClient = UndefinedHttpClient;
 
 /// An HTTP client to send requests to the registry.
-pub struct HttpClient<'a, T: SendRequest> {
+pub struct GenericHttpClient<'a, T: HttpClient> {
     _inner: T,
     timeout: Duration,
     headers: Option<(&'a str, &'a str)>,
 }
 
-pub(crate) fn new<'a, T: SendRequest>(client: T, timeout: Duration) -> HttpClient<'a, T> {
-    HttpClient {
+pub(crate) fn new<'a, T: HttpClient>(client: T, timeout: Duration) -> GenericHttpClient<'a, T> {
+    GenericHttpClient {
         _inner: client,
         timeout,
         headers: None,
     }
 }
 
-impl<'a, T: SendRequest> HttpClient<'a, T> {
+impl<'a, T: HttpClient> GenericHttpClient<'a, T> {
     pub fn headers(self, headers: (&'a str, &'a str)) -> Self {
         Self {
             headers: Some(headers),
@@ -51,7 +51,7 @@ impl<'a, T: SendRequest> HttpClient<'a, T> {
     }
 }
 
-pub trait SendRequest {
+pub trait HttpClient {
     fn get<T: DeserializeOwned>(
         url: &str,
         timeout: Duration,

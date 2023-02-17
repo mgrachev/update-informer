@@ -1,6 +1,6 @@
 use std::time::Duration;
 use update_informer::{
-    http_client::{HttpClient, SendRequest},
+    http_client::{GenericHttpClient, HttpClient},
     Check, Package, Registry, Result,
 };
 
@@ -13,8 +13,8 @@ struct YourOwnRegistry;
 impl Registry for YourOwnRegistry {
     const NAME: &'static str = "your_own_registry";
 
-    fn get_latest_version<T: SendRequest>(
-        http_client: HttpClient<T>,
+    fn get_latest_version<T: HttpClient>(
+        http_client: GenericHttpClient<T>,
         _pkg: &Package,
     ) -> Result<Option<String>> {
         let url = "https://turbo.build/api/binaries/version";

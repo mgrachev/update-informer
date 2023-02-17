@@ -1,7 +1,7 @@
 #![doc = include_str!("../README.md")]
 
 use crate::{
-    http_client::{DefaultHttpClient, SendRequest},
+    http_client::{DefaultHttpClient, HttpClient},
     version_file::VersionFile,
 };
 use std::time::Duration;
@@ -41,7 +41,7 @@ pub struct UpdateInformer<
     R: Registry,
     N: AsRef<str>,
     V: AsRef<str>,
-    H: SendRequest = DefaultHttpClient,
+    H: HttpClient = DefaultHttpClient,
 > {
     _registry: R,
     name: N,
@@ -89,7 +89,7 @@ where
     R: Registry,
     N: AsRef<str>,
     V: AsRef<str>,
-    H: SendRequest,
+    H: HttpClient,
 {
     /// Sets an interval how often to check for a new version.
     ///
@@ -137,7 +137,7 @@ where
     ///
     /// # Arguments
     ///
-    /// * `http_client` - A type that implements the `SendRequest` trait.
+    /// * `http_client` - A type that implements the `HttpClient` trait.
     ///
     /// # Examples
     ///
@@ -145,11 +145,11 @@ where
     /// use isahc::ReadResponseExt;
     /// use std::time::Duration;
     /// use serde::de::DeserializeOwned;
-    /// use update_informer::{http_client::SendRequest, registry, Check};
+    /// use update_informer::{http_client::HttpClient, registry, Check};
     ///
     /// struct YourOwnHttpClient;
     ///
-    /// impl SendRequest for YourOwnHttpClient {
+    /// impl HttpClient for YourOwnHttpClient {
     ///     fn get<T: DeserializeOwned>(
     ///         url: &str,
     ///         _timeout: Duration,
@@ -163,7 +163,7 @@ where
     /// let informer = update_informer::new(registry::Crates, "crate_name", "0.1.0").http_client(YourOwnHttpClient);
     /// let _ = informer.check_version();
     /// ```
-    pub fn http_client<C: SendRequest>(self, http_client: C) -> UpdateInformer<R, N, V, C> {
+    pub fn http_client<C: HttpClient>(self, http_client: C) -> UpdateInformer<R, N, V, C> {
         UpdateInformer {
             _registry: self._registry,
             name: self.name,
@@ -180,7 +180,7 @@ where
     R: Registry,
     N: AsRef<str>,
     V: AsRef<str>,
-    H: SendRequest,
+    H: HttpClient,
 {
     /// Checks for a new version in the registry.
     ///
@@ -275,7 +275,7 @@ impl<V: AsRef<str>> FakeUpdateInformer<V> {
         self
     }
 
-    pub fn http_client<C: SendRequest>(self, _http_client: C) -> Self {
+    pub fn http_client<C: HttpClient>(self, _http_client: C) -> Self {
         self
     }
 }

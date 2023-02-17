@@ -1,10 +1,10 @@
-use crate::{http_client::SendRequest, Result};
+use crate::{http_client::HttpClient, Result};
 use serde::de::DeserializeOwned;
 use std::time::Duration;
 
 pub struct UreqHttpClient;
 
-impl SendRequest for UreqHttpClient {
+impl HttpClient for UreqHttpClient {
     fn get<T: DeserializeOwned>(
         url: &str,
         timeout: Duration,
