@@ -39,7 +39,7 @@ jobs:
           - reqwest
     steps:
       - uses: actions/checkout@v3
-      - uses: dtolnay/rust-toolchain@nightly
+      - uses: dtolnay/rust-toolchain@stable
       # https://github.com/dtolnay/rust-toolchain/issues/29
       - run: rustup override set nightly
       - name: Set grcov version
