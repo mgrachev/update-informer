@@ -1,6 +1,6 @@
 [package]
 name = "update-informer"
-version = "0.6.0" # managed by release.sh
+version = "1.0.0" # managed by release.sh
 authors = ["Mikhail Grachev <work@mgrachev.com>"]
 categories = ["command-line-interface"]
 documentation = "https://docs.rs/update-informer"
