@@ -2,6 +2,45 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.0.0](https://github.com/mgrachev/update-informer/releases/tag/v1.0.0) - 2023-05-08
+
+### Features
+
+- Add `npm` registry support ([#80](https://github.com/mgrachev/update-informer/pull/80))
+- Add `reqwest` crate support ([#81](https://github.com/mgrachev/update-informer/pull/81))
+- Add ability to use your own http client ([#83](https://github.com/mgrachev/update-informer/pull/83))
+- Use undefined http client if no other is selected ([#89](https://github.com/mgrachev/update-informer/pull/89))
+- Add `http_client` method for `FakeUpdateInformer` ([#87](https://github.com/mgrachev/update-informer/pull/87))
+
+### CI
+
+- Check PR name instead of commits ([#85](https://github.com/mgrachev/update-informer/pull/85))
+
+### Miscellaneous Tasks
+
+- Add example declarations for examples that have required features ([#90](https://github.com/mgrachev/update-informer/pull/90))
+- Add more examples ([#88](https://github.com/mgrachev/update-informer/pull/88))
+- Get rid of `orhun/git-cliff-action` ([#78](https://github.com/mgrachev/update-informer/pull/78))
+
+### Refactor
+
+- Replace `Option<(&'a str, &'a str)>` with `HeaderMap` ([#101](https://github.com/mgrachev/update-informer/pull/101), [#102](https://github.com/mgrachev/update-informer/pull/102))
+- Change trait name `SendRequest` -> `HttpClient` ([#92](https://github.com/mgrachev/update-informer/pull/92))
+- Remove deprecated `FakeUpdateInformer::new` function ([#86](https://github.com/mgrachev/update-informer/pull/86))
+- Move current_version to package ([#82](https://github.com/mgrachev/update-informer/pull/82))
+- Remove deprecated function ([#79](https://github.com/mgrachev/update-informer/pull/79))
+
+### Update dependencies
+
+- Update directories requirement from 4.0 to 5.0 ([#98](https://github.com/mgrachev/update-informer/pull/98))
+- Update mockito requirement from 0.31 to 0.32 ([#91](https://github.com/mgrachev/update-informer/pull/91))
+- Bump actions/stale from 7 to 8 ([#99](https://github.com/mgrachev/update-informer/pull/99))
+- Bump lycheeverse/lychee-action from 1.6.1 to 1.7.0 ([#100](https://github.com/mgrachev/update-informer/pull/100))
+- Bump Swatinem/rust-cache from 2.2.0 to 2.2.1 ([#95](https://github.com/mgrachev/update-informer/pull/95))
+- Bump lycheeverse/lychee-action from 1.5.4 to 1.6.1 ([#94](https://github.com/mgrachev/update-informer/pull/94))
+- Bump dprint/check from 2.1 to 2.2 ([#84](https://github.com/mgrachev/update-informer/pull/84))
+- Bump actions/stale from 6 to 7 ([#76](https://github.com/mgrachev/update-informer/pull/76))
+
 ## [v0.6.0](https://github.com/mgrachev/update-informer/releases/tag/v0.6.0) - 2022-12-08
 
 ### 🚀 Added
