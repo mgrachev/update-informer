@@ -37,7 +37,7 @@ impl Registry for GitHub {
     ) -> Result<Option<String>> {
         let url = format!("{}/{}/releases/latest", get_base_url(), pkg);
         let resp = http_client
-            .headers(("Accept", "application/vnd.github.v3+json"))
+            .add_header("Accept", "application/vnd.github.v3+json")
             .get::<Response>(&url)?;
 
         if resp.tag_name.starts_with('v') {

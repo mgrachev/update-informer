@@ -1,22 +1,21 @@
-use crate::{http_client::HttpClient, Result};
+use crate::{
+    http_client::{HeaderMap, HttpClient},
+    Result,
+};
 use serde::de::DeserializeOwned;
 use std::time::Duration;
 
 pub struct ReqwestHttpClient;
 
 impl HttpClient for ReqwestHttpClient {
-    fn get<T: DeserializeOwned>(
-        url: &str,
-        timeout: Duration,
-        headers: Option<(&str, &str)>,
-    ) -> Result<T> {
+    fn get<T: DeserializeOwned>(url: &str, timeout: Duration, headers: HeaderMap) -> Result<T> {
         let mut req = reqwest::blocking::Client::builder()
             .timeout(timeout)
             .build()?
             .get(url);
 
-        if let Some((key, val)) = headers {
-            req = req.header(key, val)
+        for (key, value) in headers {
+            req = req.header(key, value);
         }
 
         let json = req.send()?.json()?;

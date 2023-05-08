@@ -1,7 +1,10 @@
 use isahc::ReadResponseExt;
 use serde::de::DeserializeOwned;
 use std::time::Duration;
-use update_informer::{http_client::HttpClient, registry, Check};
+use update_informer::{
+    http_client::{HeaderMap, HttpClient},
+    registry, Check,
+};
 
 struct YourOwnHttpClient;
 
@@ -9,7 +12,7 @@ impl HttpClient for YourOwnHttpClient {
     fn get<T: DeserializeOwned>(
         url: &str,
         _timeout: Duration,
-        _headers: Option<(&str, &str)>,
+        _headers: HeaderMap,
     ) -> update_informer::Result<T> {
         let json = isahc::get(url)?.json()?;
         Ok(json)

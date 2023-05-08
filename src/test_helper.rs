@@ -3,7 +3,7 @@ use mockito::{mock, Mock};
 use once_cell::sync::Lazy;
 use std::{fs, panic, path::PathBuf, sync::Mutex};
 
-static LOCK: Lazy<Mutex<()>> = once_cell::sync::Lazy::new(|| Mutex::default());
+static LOCK: Lazy<Mutex<()>> = Lazy::new(|| Mutex::default());
 
 pub(crate) fn within_test_dir(f: fn(path: PathBuf)) {
     // To avoid problems when working in parallel with the file system
