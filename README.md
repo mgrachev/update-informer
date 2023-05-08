@@ -23,6 +23,8 @@
 [Evrone]: https://evrone.com/?utm_source=github&utm_campaign=update-informer
 [turbo]: https://github.com/vercel/turbo
 [reqwest]: https://github.com/seanmonstar/reqwest
+[isahc]: https://github.com/sagebind/isahc
+[here]: https://github.com/mgrachev/update-informer/tree/main/examples
 
 [![CI][ci-badge]][ci-url]
 [![Version][crates-badge]][crates-url]
@@ -110,7 +112,7 @@ use update_informer::{registry, Check};
 const EVERY_HOUR: Duration = Duration::from_secs(60 * 60);
 
 let informer = update_informer::new(registry::Crates, "crate_name", "0.1.0").interval(EVERY_HOUR);
-let _ = informer.check_version(); // The check will start only after an hour
+informer.check_version(); // The check will start only after an hour
 ```
 
 ## Caching
@@ -124,7 +126,7 @@ use std::time::Duration;
 use update_informer::{registry, Check};
 
 let informer = update_informer::new(registry::Crates, "crate_name", "0.1.0").interval(Duration::ZERO);
-let _ = informer.check_version();
+informer.check_version();
 ```
 
 ## Request timeout
@@ -138,7 +140,7 @@ use update_informer::{registry, Check};
 const THIRTY_SECONDS: Duration = Duration::from_secs(30);
 
 let informer = update_informer::new(registry::Crates, "crate_name", "0.1.0").timeout(THIRTY_SECONDS);
-let _ = informer.check_version();
+informer.check_version();
 ```
 
 ## Implementing your own registry
@@ -171,13 +173,13 @@ informer.check_version();
 
 ## Using your own HTTP client
 
-You can use your own HTTP client to check updates. For example:
+You can use your own HTTP client to check updates. For example, [isahc]:
 
 ```rust
 use isahc::ReadResponseExt;
 use std::time::Duration;
 use serde::de::DeserializeOwned;
-use update_informer::{http_client::HttpClient, registry, Check};
+use update_informer::{http_client::{HeaderMap, HttpClient}, registry, Check};
 
 struct YourOwnHttpClient;
 
@@ -185,7 +187,7 @@ impl HttpClient for YourOwnHttpClient {
     fn get<T: DeserializeOwned>(
         url: &str,
         _timeout: Duration,
-        _headers: Option<(&str, &str)>,
+        _headers: HeaderMap,
     ) -> update_informer::Result<T> {
         let json = isahc::get(url)?.json()?;
         Ok(json)
@@ -193,7 +195,7 @@ impl HttpClient for YourOwnHttpClient {
 }
 
 let informer = update_informer::new(registry::Crates, "crate_name", "0.1.0").http_client(YourOwnHttpClient);
-let _ = informer.check_version();
+informer.check_version();
 ```
 
 ## Tests
@@ -240,7 +242,7 @@ let informer = update_informer::new(registry::Crates, name, version);
 #[cfg(feature = "stub_check_version")]
 let informer = update_informer::fake(registry::Crates, name, version, "1.0.0");
 
-let _ = informer.check_version();
+informer.check_version();
 ```
 
 ## Users
