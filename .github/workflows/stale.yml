@@ -13,7 +13,8 @@ jobs:
           days-before-close: 5
           stale-issue-label: 'stale'
           stale-pr-label: 'stale'
-          exempt-issue-labels: 'good first issue,help wanted'
+          exempt-issue-labels: 'good first issue,help wanted,bug'
+          exempt-pr-labels: 'dependencies,bug'
           stale-issue-message: 'This issue is stale because it has been open 14 days with no activity. Remove stale label or comment or this will be closed in 5 days.'
           stale-pr-message: 'This PR is stale because it has been open 14 days with no activity. Remove stale label or comment or this will be closed in 5 days.'
           close-issue-message: 'This issue was closed because it has been stalled for 5 days with no activity.'
