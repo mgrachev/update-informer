@@ -72,14 +72,16 @@ update-informer = { version = "1.0", default_features = false, features = ["gith
 
 Available features:
 
-| Name      | Type        | Default? |
-| --------- | ----------- | -------- |
-| crates    | Registry    | Yes      |
-| github    | Registry    | No       |
-| npm       | Registry    | No       |
-| pypi      | Registry    | No       |
-| [ureq]    | HTTP client | Yes      |
-| [reqwest] | HTTP client | No       |
+| Name       | Type                | Default? |
+| ---------- | ------------------- | -------- |
+| crates     | Registry            | Yes      |
+| github     | Registry            | No       |
+| npm        | Registry            | No       |
+| pypi       | Registry            | No       |
+| [ureq]     | HTTP client         | Yes      |
+| [reqwest]  | HTTP client         | No       |
+| rustls-tls | HTTP client feature | Yes      |
+| native-tls | HTTP client feature | No       |
 
 ## Checking for a new version
 

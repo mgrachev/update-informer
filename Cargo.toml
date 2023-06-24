@@ -14,13 +14,15 @@ repository = "https://github.com/mgrachev/update-informer"
 description = "Update informer for CLI applications"
 
 [features]
-default = ["crates", "ureq"]
+default = ["crates", "ureq", "rustls-tls"]
 crates = []
 github = []
 npm = []
 pypi = []
 ureq = ["dep:ureq"]
 reqwest = ["dep:reqwest"]
+rustls-tls = ["ureq?/tls", "reqwest?/rustls-tls"]
+native-tls = ["ureq?/native-tls", "reqwest?/native-tls"]
 
 [dependencies]
 directories = "5.0"
@@ -31,12 +33,14 @@ serde_json = "1.0"
 [dependencies.reqwest]
 version = "0.11"
 optional = true
+default-features = false
 features = ["blocking", "json"]
 
 [dependencies.ureq]
 version = "2.4"
 optional = true
-features = ["json"]
+default-features = false
+features = ["json", "gzip"]
 
 [dev-dependencies]
 # Used in the examples of documentation
