@@ -67,7 +67,7 @@ To enable support for other registries or change the HTTP client, use `features`
 
 ```toml
 [dependencies]
-update-informer = { version = "1.0", default_features = false, features = ["github", "reqwest"] }
+update-informer = { version = "1.0", default-features = false, features = ["github", "reqwest"] }
 ```
 
 Available features:
