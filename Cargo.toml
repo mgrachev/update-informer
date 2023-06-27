@@ -40,7 +40,7 @@ features = ["blocking", "json"]
 version = "2.4"
 optional = true
 default-features = false
-features = ["json", "gzip"]
+features = ["gzip", "json"]
 
 [dev-dependencies]
 # Used in the examples of documentation
