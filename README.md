@@ -59,7 +59,7 @@ Add `update-informer` to `Cargo.toml`:
 
 ```toml
 [dependencies]
-update-informer = "1.0"
+update-informer = "1.1"
 ```
 
 By default, `update-informer` can only check on Crates.io and uses [ureq] as a default HTTP client.
@@ -67,7 +67,7 @@ To enable support for other registries or change the HTTP client, use `features`
 
 ```toml
 [dependencies]
-update-informer = { version = "1.0", default-features = false, features = ["github", "reqwest", "native-tls"] }
+update-informer = { version = "1.1", default-features = false, features = ["github", "reqwest", "native-tls"] }
 ```
 
 Available features:
