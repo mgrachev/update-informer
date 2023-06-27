@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.1.0](https://github.com/mgrachev/update-informer/releases/tag/v1.1.0) - 2023-06-27
+
+### Features
+
+- Add `rustls-tls` and `native-tls` features ([#111](https://github.com/mgrachev/update-informer/pull/111))
+- Add `User-Agent` header for GitHub registry ([#114](https://github.com/mgrachev/update-informer/pull/114))
+
+### Miscellaneous Tasks
+
+- Fix typo in README ([#112](https://github.com/mgrachev/update-informer/pull/112))
+- Update exempt labels for stale action ([#107](https://github.com/mgrachev/update-informer/pull/107))
+
+### Update dependencies
+
+- Bump Swatinem/rust-cache from 2.4.0 to 2.5.0 ([#108](https://github.com/mgrachev/update-informer/pull/108))
+- Bump Swatinem/rust-cache from 2.3.0 to 2.4.0 ([#106](https://github.com/mgrachev/update-informer/pull/106))
+- Bump lycheeverse/lychee-action from 1.7.0 to 1.8.0 ([#105](https://github.com/mgrachev/update-informer/pull/105))
+- Bump Swatinem/rust-cache from 2.2.1 to 2.3.0 ([#104](https://github.com/mgrachev/update-informer/pull/104))
+
 ## [v1.0.0](https://github.com/mgrachev/update-informer/releases/tag/v1.0.0) - 2023-05-08
 
 ### Features
