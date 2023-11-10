@@ -22,6 +22,7 @@
 [update-informer]: https://evrone.com/update-informer?utm_source=github&utm_campaign=update-informer
 [Evrone]: https://evrone.com/?utm_source=github&utm_campaign=update-informer
 [turbo]: https://github.com/vercel/turbo
+[fselect]: https://github.com/jhspetersson/fselect
 [reqwest]: https://github.com/seanmonstar/reqwest
 [isahc]: https://github.com/sagebind/isahc
 [here]: https://github.com/mgrachev/update-informer/tree/main/examples
@@ -252,6 +253,7 @@ informer.check_version();
 - [git-cliff]
 - [dotenv-linter]
 - [turbo]
+- [fselect]
 
 ## MSRV
 
