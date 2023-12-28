@@ -21,7 +21,7 @@ jobs:
           - ureq
           - reqwest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2.5.1
       - run: cargo check --no-default-features --features ${{ matrix.registry }},${{ matrix.http_client }}
@@ -38,7 +38,7 @@ jobs:
           - ureq
           - reqwest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@nightly
       # https://github.com/dtolnay/rust-toolchain/issues/29
       - run: rustup override set nightly
@@ -67,7 +67,7 @@ jobs:
   cargo-sort:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2.5.1
       - run: cargo install cargo-sort
@@ -76,7 +76,7 @@ jobs:
   links:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: lycheeverse/lychee-action@v1.8.0
         with:
           args: . --verbose --exclude "pkg_name|your_own_registry"
@@ -85,5 +85,5 @@ jobs:
   style:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dprint/check@v2.2
