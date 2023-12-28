@@ -23,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2.5.1
+      - uses: Swatinem/rust-cache@v2.7.1
       - run: cargo check --no-default-features --features ${{ matrix.registry }},${{ matrix.http_client }}
       - run: cargo fmt --all --check
       - run: cargo clippy --no-default-features --features ${{ matrix.registry }},${{ matrix.http_client }} -- -D warnings
@@ -49,7 +49,7 @@ jobs:
         run: |
           rm -f target/debug/deps/*.gcda
           rm -f target/debug/deps/*.gcno
-      - uses: Swatinem/rust-cache@v2.5.1
+      - uses: Swatinem/rust-cache@v2.7.1
         with:
           key: ${{ env.GRCOV_VERSION }}
       - run: cargo test --no-fail-fast --no-default-features --features ${{ matrix.all_registries }},${{ matrix.http_client }}
@@ -69,7 +69,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2.5.1
+      - uses: Swatinem/rust-cache@v2.7.1
       - run: cargo install cargo-sort
       - run: cargo-sort --check
 
