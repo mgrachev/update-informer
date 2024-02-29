@@ -46,7 +46,7 @@ features = ["gzip", "json"]
 # Used in the examples of documentation
 colored = "2.0"
 isahc = { version = "1.7", features = ["json"] }
-mockito = "0.32"
+mockito = "1.4"
 once_cell = "1.10"
 
 [[example]]
