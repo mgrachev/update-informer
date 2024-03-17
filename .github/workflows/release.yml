@@ -19,7 +19,7 @@ jobs:
           cargo login ${{ secrets.CRATES_TOKEN }}
           cargo publish
       - name: Publish release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           draft: true
           body_path: CHANGELOG.md
