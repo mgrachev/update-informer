@@ -14,7 +14,7 @@
 [semver]: https://github.com/dtolnay/semver
 [serde]: https://github.com/serde-rs/serde
 [GitHub CLI application]: https://github.com/cli/cli/blob/trunk/internal/update/update.go
-[npm]: https://github.com/npm/cli/blob/latest/lib/utils/update-notifier.js
+[npm]: https://github.com/npm/cli/blob/latest/lib/cli/update-notifier.js
 [JavaScript library]: https://github.com/yeoman/update-notifier
 [MIT]: https://choosealicense.com/licenses/mit
 [git-cliff]: https://github.com/orhun/git-cliff
