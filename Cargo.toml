@@ -2,16 +2,16 @@
 name = "update-informer"
 version = "1.1.0" # managed by release.sh
 authors = ["Mikhail Grachev <work@mgrachev.com>"]
-categories = ["command-line-interface"]
+categories = ["web-programming", "caching"]
 documentation = "https://docs.rs/update-informer"
 edition = "2021"
 homepage = "https://github.com/mgrachev/update-informer"
 include = ["/src", "README.md"]
-keywords = ["cli", "update", "informer", "notifier", "github"]
+keywords = ["update", "version-check", "notifier", "github", "cli"]
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/mgrachev/update-informer"
-description = "Update informer for CLI applications"
+description = "Easily implement update checks for your application"
 
 [features]
 default = ["crates", "ureq", "rustls-tls"]
