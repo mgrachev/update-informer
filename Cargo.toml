@@ -13,6 +13,9 @@ readme = "README.md"
 repository = "https://github.com/mgrachev/update-informer"
 description = "Update informer for CLI applications"
 
+[package.metadata.docs.rs]
+features = ["crates", "github", "npm", "pypi"]
+
 [features]
 default = ["crates", "ureq", "rustls-tls"]
 crates = []
