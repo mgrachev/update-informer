@@ -36,7 +36,9 @@ pub trait Check {
     }
 }
 
-/// Checks for a new version on Crates.io, GitHub, Npm and PyPi.
+/// Checks for a new version on Crates.io, GitHub, Npm or PyPi.
+///
+/// A cache file handled by the instance throttles the number of actual update checks, or you can opt in to manage this yourself.
 pub struct UpdateInformer<
     R: Registry,
     N: AsRef<str>,
@@ -91,11 +93,11 @@ where
     V: AsRef<str>,
     H: HttpClient,
 {
-    /// Sets an interval how often to check for a new version.
+    /// Sets the interval of how often to check for a new version.
     ///
     /// # Arguments
     ///
-    /// * `interval` - An interval in seconds. By default, it is 24 hours.
+    /// * `interval` - The `Duration` after an actual update check during which a subsequent check will be skipped. 24 hours by default. This is implemented using a cache file. Specify `Duration::ZERO` to work without a cache file and unconditionally perform the update check.
     ///
     /// # Examples
     ///
@@ -183,6 +185,8 @@ where
     H: HttpClient,
 {
     /// Checks for a new version in the registry.
+    ///
+    /// In case of a non-zero [`interval()`](Self::interval), this will create or access a cache file.
     ///
     /// # Examples
     ///
