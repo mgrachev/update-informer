@@ -37,9 +37,9 @@
      alt="update-informer"
      src="https://raw.githubusercontent.com/mgrachev/update-informer/main/logo.svg?sanitize=true">
 
-Update informer for CLI applications written in Rust 🦀
+Update informer for applications written in Rust 🦀
 
-It checks for a new version on Crates.io, GitHub, Npm and PyPI 🚀
+It checks for a new version on Crates.io, GitHub, Npm and PyPI. 🚀
 
 ## Benefits
 
