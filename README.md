@@ -9,7 +9,7 @@
 [codecov-badge]: https://codecov.io/gh/mgrachev/update-informer/branch/main/graph/badge.svg?token=A4XD1DGFGJ
 [codecov-url]: https://codecov.io/gh/mgrachev/update-informer
 [downloads-badge]: https://img.shields.io/crates/d/update-informer
-[directories]: https://github.com/dirs-dev/directories-rs
+[etcetera]: https://github.com/lunacookies/etcetera 
 [ureq]: https://github.com/algesten/ureq
 [semver]: https://github.com/dtolnay/semver
 [serde]: https://github.com/serde-rs/serde
@@ -47,7 +47,7 @@ It checks for a new version on Crates.io, GitHub, Npm and PyPI. 🚀
 - Configurable [check frequency](#interval) and [request timeout](#request-timeout).
 - [Caching](#caching) the results of checking updates.
 - Ability to implement your own [registry](#implementing-your-own-registry) or [http client](#using-your-own-http-client).
-- **Minimum dependencies** - only [directories], [semver], [serde] and an HTTP client ([ureq] or [reqwest]).
+- **Minimum dependencies** - only [etcetera], [semver], [serde] and an HTTP client ([ureq] or [reqwest]).
 
 ## Idea
 

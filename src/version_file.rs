@@ -50,9 +50,10 @@ impl<'a> VersionFile<'a> {
 
 #[cfg(not(test))]
 fn cache_path() -> Result<PathBuf> {
-    let project_dir = directories::ProjectDirs::from("", "", "update-informer-rs")
-        .ok_or("Unable to find cache directory")?;
-    let directory = project_dir.cache_dir().to_path_buf();
+    use etcetera::BaseStrategy;
+    let base_dir =
+        etcetera::choose_base_strategy().map_err(|_| "Unable to find cache directory")?;
+    let directory = base_dir.cache_dir().join("update-informer-rs");
     fs::create_dir_all(&directory)?;
     Ok(directory)
 }
