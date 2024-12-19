@@ -1,7 +1,7 @@
 name: CI
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
 
 env:
@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        all_registries: ["crates,github,npm,pypi"]
+        all_registries: [ "crates,github,npm,pypi" ]
         http_client:
           - ureq
           - reqwest
