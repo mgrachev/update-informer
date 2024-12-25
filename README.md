@@ -9,7 +9,7 @@
 [codecov-badge]: https://codecov.io/gh/mgrachev/update-informer/branch/main/graph/badge.svg?token=A4XD1DGFGJ
 [codecov-url]: https://codecov.io/gh/mgrachev/update-informer
 [downloads-badge]: https://img.shields.io/crates/d/update-informer
-[etcetera]: https://github.com/lunacookies/etcetera 
+[etcetera]: https://github.com/lunacookies/etcetera
 [ureq]: https://github.com/algesten/ureq
 [semver]: https://github.com/dtolnay/semver
 [serde]: https://github.com/serde-rs/serde
@@ -35,8 +35,8 @@
 [![Downloads][downloads-badge]][crates-url]
 
 <img align="right"
-     alt="update-informer"
-     src="https://raw.githubusercontent.com/mgrachev/update-informer/main/logo.svg?sanitize=true">
+alt="update-informer"
+src="https://raw.githubusercontent.com/mgrachev/update-informer/main/logo.svg?sanitize=true">
 
 Update informer for applications written in Rust 🦀
 
@@ -47,7 +47,8 @@ It checks for a new version on Crates.io, GitHub, Npm and PyPI. 🚀
 - Support of **Crates.io**, **GitHub**, **Npm** and **PyPI**.
 - Configurable [check frequency](#interval) and [request timeout](#request-timeout).
 - [Caching](#caching) the results of checking updates.
-- Ability to implement your own [registry](#implementing-your-own-registry) or [http client](#using-your-own-http-client).
+- Ability to implement your own [registry](#implementing-your-own-registry)
+  or [http client](#using-your-own-http-client).
 - **Minimum dependencies** - only [etcetera], [semver], [serde] and an HTTP client ([ureq] or [reqwest]).
 
 ## Idea
@@ -204,7 +205,8 @@ informer.check_version();
 
 ## Tests
 
-In order not to check for updates in tests, you can use the `FakeUpdateInformer::check_version` function, which returns the desired version:
+In order not to check for updates in tests, you can use the `FakeUpdateInformer::check_version` function, which returns
+the desired version:
 
 ```rust
 use update_informer::{registry, Check};
@@ -225,7 +227,8 @@ if let Some(version) = informer.check_version().ok().flatten() {
 
 ## Integration tests
 
-To use the `FakeUpdateInformer::check_version` function in integration tests, you must first add the feature flag to `Cargo.toml`:
+To use the `FakeUpdateInformer::check_version` function in integration tests, you must first add the feature flag to
+`Cargo.toml`:
 
 ```toml
 [features]
