@@ -2,6 +2,51 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.2.0](https://github.com/mgrachev/update-informer/releases/tag/v1.2.0) - 2024-12-25
+
+### Fixes
+
+- Use etcetera instead of directories ([#152](https://github.com/mgrachev/update-informer/pull/152))
+
+### CI
+
+- Rollback codecov to v3 ([#127](https://github.com/mgrachev/update-informer/pull/127))
+
+### Documentation
+
+- Add `fzf-make` as user in README ([#153](https://github.com/mgrachev/update-informer/pull/153))
+- Documented `UpdateInformer` usage that doesn't create cache file ([#146](https://github.com/mgrachev/update-informer/pull/146))
+
+### Miscellaneous Tasks
+
+- Fix CI and linter warnings ([#155](https://github.com/mgrachev/update-informer/pull/155))
+- Remove stale action ([#154](https://github.com/mgrachev/update-informer/pull/154))
+- Made Cargo.toml and readme less CLI-centric ([#145](https://github.com/mgrachev/update-informer/pull/145))
+- Direct docs.rs via Cargo.toml to document all registries ([#144](https://github.com/mgrachev/update-informer/pull/144))
+- Update link ([#140](https://github.com/mgrachev/update-informer/pull/140))
+- Update reqwest requirement from 0.11 to 0.12 ([#137](https://github.com/mgrachev/update-informer/pull/137))
+- Add `fselect` as user in README ([#125](https://github.com/mgrachev/update-informer/pull/125))
+
+### Update dependencies
+
+- Bump lycheeverse/lychee-action from 2.0.2 to 2.2.0 ([#157](https://github.com/mgrachev/update-informer/pull/157))
+- Bump lycheeverse/lychee-action from 1.10.0 to 2.0.2 ([#151](https://github.com/mgrachev/update-informer/pull/151))
+- Bump Swatinem/rust-cache from 2.7.3 to 2.7.5 ([#150](https://github.com/mgrachev/update-informer/pull/150))
+- Bump lycheeverse/lychee-action from 1.9.3 to 1.10.0 ([#139](https://github.com/mgrachev/update-informer/pull/139))
+- Bump lycheeverse/lychee-action from 1.9.2 to 1.9.3 ([#133](https://github.com/mgrachev/update-informer/pull/133))
+- Bump softprops/action-gh-release from 1 to 2 ([#136](https://github.com/mgrachev/update-informer/pull/136))
+- Bump codecov/codecov-action from 3 to 4 ([#134](https://github.com/mgrachev/update-informer/pull/134))
+- Bump lycheeverse/lychee-action from 1.9.1 to 1.9.2 ([#132](https://github.com/mgrachev/update-informer/pull/132))
+- Bump Swatinem/rust-cache from 2.7.2 to 2.7.3 ([#131](https://github.com/mgrachev/update-informer/pull/131))
+- Bump Swatinem/rust-cache from 2.7.1 to 2.7.2 ([#130](https://github.com/mgrachev/update-informer/pull/130))
+- Bump lycheeverse/lychee-action from 1.9.0 to 1.9.1 ([#129](https://github.com/mgrachev/update-informer/pull/129))
+- Bump lycheeverse/lychee-action from 1.8.0 to 1.9.0 ([#128](https://github.com/mgrachev/update-informer/pull/128))
+- Bump actions/stale from 8 to 9 ([#126](https://github.com/mgrachev/update-informer/pull/126))
+- Bump Swatinem/rust-cache from 2.5.1 to 2.7.1 ([#124](https://github.com/mgrachev/update-informer/pull/124))
+- Bump codecov/codecov-action from 3 to 4 ([#122](https://github.com/mgrachev/update-informer/pull/122))
+- Bump actions/checkout from 3 to 4 ([#120](https://github.com/mgrachev/update-informer/pull/120))
+- Bump Swatinem/rust-cache from 2.5.0 to 2.5.1 ([#116](https://github.com/mgrachev/update-informer/pull/116))
+
 ## [v1.1.0](https://github.com/mgrachev/update-informer/releases/tag/v1.1.0) - 2023-06-27
 
 ### Features
