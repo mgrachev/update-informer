@@ -27,6 +27,7 @@
 [reqwest]: https://github.com/seanmonstar/reqwest
 [isahc]: https://github.com/sagebind/isahc
 [here]: https://github.com/mgrachev/update-informer/tree/main/examples
+[nushell]: https://github.com/nushell/nushell
 
 [![CI][ci-badge]][ci-url]
 [![Version][crates-badge]][crates-url]
@@ -259,6 +260,7 @@ informer.check_version();
 - [turbo]
 - [fselect]
 - [fzf-make]
+- [nushell]
 
 ## MSRV
 
