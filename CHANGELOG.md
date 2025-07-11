@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.3.0](https://github.com/mgrachev/update-informer/releases/tag/v1.3.0) - 2025-07-11
+
+### Fixes
+
+- Fix a bug with ureq and native-tls feature ([#172](https://github.com/mgrachev/update-informer/pull/172))
+
+### Miscellaneous Tasks
+
+- Update etcetera requirement from 0.8.0 to 0.10.0 ([#167](https://github.com/mgrachev/update-informer/pull/167))
+- Add `nushell` as user in README ([#162](https://github.com/mgrachev/update-informer/pull/162))
+- Update colored requirement from 2.0 to 3.0 ([#160](https://github.com/mgrachev/update-informer/pull/160))
+
+### Update dependencies
+
+- Bump `ureq` to 3.0 ([#169](https://github.com/mgrachev/update-informer/pull/169))
+
 ## [v1.2.0](https://github.com/mgrachev/update-informer/releases/tag/v1.2.0) - 2024-12-25
 
 ### Fixes
