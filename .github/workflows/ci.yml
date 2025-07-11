@@ -20,14 +20,17 @@ jobs:
         http_client:
           - ureq
           - reqwest
+        tls:
+          - rustls-tls
+          - native-tls
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
-      - run: cargo check --no-default-features --features ${{ matrix.registry }},${{ matrix.http_client }}
+      - run: cargo check --no-default-features --features ${{ matrix.registry }},${{ matrix.http_client }},${{ matrix.tls }}
       - run: cargo fmt --all --check
-      - run: cargo clippy --no-default-features --features ${{ matrix.registry }},${{ matrix.http_client }} -- -D warnings
-      - run: cargo build --release --no-default-features --features ${{ matrix.registry }},${{ matrix.http_client }}
+      - run: cargo clippy --no-default-features --features ${{ matrix.registry }},${{ matrix.http_client }},${{ matrix.tls }} -- -D warnings
+      - run: cargo build --release --no-default-features --features ${{ matrix.registry }},${{ matrix.http_client }},${{ matrix.tls }}
 
   test-coverage:
     runs-on: ubuntu-latest
@@ -37,6 +40,9 @@ jobs:
         http_client:
           - ureq
           - reqwest
+        tls:
+          - rustls-tls
+          - native-tls
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@nightly
@@ -49,7 +55,7 @@ jobs:
           crate: grcov
       - run: cargo clean
       - uses: Swatinem/rust-cache@v2
-      - run: cargo test --no-fail-fast --no-default-features --features ${{ matrix.all_registries }},${{ matrix.http_client }}
+      - run: cargo test --no-fail-fast --no-default-features --features ${{ matrix.all_registries }},${{ matrix.http_client }},${{ matrix.tls }}
         env:
           CARGO_INCREMENTAL: '0'
           LLVM_PROFILE_FILE: 'target/debug/coverage/update-informer-%p-%m.profraw'
