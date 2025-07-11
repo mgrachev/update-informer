@@ -10,11 +10,16 @@ pub struct UreqHttpClient;
 
 impl HttpClient for UreqHttpClient {
     fn get<T: DeserializeOwned>(url: &str, timeout: Duration, headers: HeaderMap) -> Result<T> {
-        let agent: Agent = Agent::config_builder()
-            .timeout_global(Some(timeout))
-            .build()
-            .into();
+        let config = Agent::config_builder().timeout_global(Some(timeout));
 
+        #[cfg(all(feature = "native-tls", not(feature = "rustls-tls")))]
+        let config = config.tls_config(
+            ureq::tls::TlsConfig::builder()
+                .provider(ureq::tls::TlsProvider::NativeTls)
+                .build(),
+        );
+
+        let agent: Agent = config.build().into();
         let mut req = agent.get(url);
 
         for (header, value) in headers {
