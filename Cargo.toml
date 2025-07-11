@@ -53,9 +53,25 @@ mockito = "0.32"
 once_cell = "1.10"
 
 [[example]]
+name = "colored"
+path = "examples/colored.rs"
+
+[[example]]
+name = "crates"
+path = "examples/crates.rs"
+
+[[example]]
+name = "fake"
+path = "examples/fake.rs"
+
+[[example]]
 name = "github"
 path = "examples/github.rs"
 required-features = ["github"]
+
+[[example]]
+name = "http_client"
+path = "examples/http_client.rs"
 
 [[example]]
 name = "npm"
@@ -66,3 +82,7 @@ required-features = ["npm"]
 name = "pypi"
 path = "examples/pypi.rs"
 required-features = ["pypi"]
+
+[[example]]
+name = "registry"
+path = "examples/registry.rs"
