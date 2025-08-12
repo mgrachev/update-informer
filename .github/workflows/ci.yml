@@ -24,7 +24,7 @@ jobs:
           - rustls-tls
           - native-tls
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - run: cargo check --no-default-features --features ${{ matrix.registry }},${{ matrix.http_client }},${{ matrix.tls_backend }}
@@ -44,7 +44,7 @@ jobs:
           - rustls-tls
           - native-tls
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@nightly
         with:
           components: llvm-tools-preview
@@ -69,7 +69,7 @@ jobs:
   cargo-sort:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - run: cargo install cargo-sort
@@ -78,7 +78,7 @@ jobs:
   links:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: lycheeverse/lychee-action@v2
         with:
           args: . --verbose --exclude "pkg_name|your_own_registry"
@@ -87,5 +87,5 @@ jobs:
   style:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dprint/check@v2.3
