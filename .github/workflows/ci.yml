@@ -21,7 +21,7 @@ jobs:
           - ureq
           - reqwest
         tls_backend:
-          - rustls-tls
+          - rustls
           - native-tls
     steps:
       - uses: actions/checkout@v7
@@ -41,7 +41,7 @@ jobs:
           - ureq
           - reqwest
         tls_backend:
-          - rustls-tls
+          - rustls
           - native-tls
     steps:
       - uses: actions/checkout@v7

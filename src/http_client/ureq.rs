@@ -12,7 +12,7 @@ impl HttpClient for UreqHttpClient {
     fn get<T: DeserializeOwned>(url: &str, timeout: Duration, headers: HeaderMap) -> Result<T> {
         let config = Agent::config_builder().timeout_global(Some(timeout));
 
-        #[cfg(all(feature = "native-tls", not(feature = "rustls-tls")))]
+        #[cfg(all(feature = "native-tls", not(feature = "rustls")))]
         let config = config.tls_config(
             ureq::tls::TlsConfig::builder()
                 .provider(ureq::tls::TlsProvider::NativeTls)

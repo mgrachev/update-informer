@@ -17,14 +17,14 @@ description = "Easily implement update checks for your application"
 features = ["crates", "github", "npm", "pypi"]
 
 [features]
-default = ["crates", "ureq", "rustls-tls"]
+default = ["crates", "ureq", "rustls"]
 crates = []
 github = []
 npm = []
 pypi = []
 ureq = ["dep:ureq"]
 reqwest = ["dep:reqwest"]
-rustls-tls = ["ureq?/rustls", "reqwest?/rustls"]
+rustls = ["ureq?/rustls", "reqwest?/rustls"]
 native-tls = ["ureq?/native-tls", "reqwest?/native-tls"]
 
 [dependencies]
