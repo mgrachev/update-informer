@@ -84,7 +84,7 @@ Available features:
 | pypi       | Registry            | No       |
 | [ureq]     | HTTP client         | Yes      |
 | [reqwest]  | HTTP client         | No       |
-| rustls-tls | HTTP client feature | Yes      |
+| rustls     | HTTP client feature | Yes      |
 | native-tls | HTTP client feature | No       |
 
 ## Checking for a new version
