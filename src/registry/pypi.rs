@@ -4,9 +4,6 @@ use crate::{
 };
 use serde::Deserialize;
 
-#[cfg(test)]
-use mockito;
-
 #[cfg(not(test))]
 const REGISTRY_URL: &str = "https://pypi.org";
 
@@ -31,7 +28,7 @@ fn get_base_url() -> String {
 
 #[cfg(test)]
 fn get_base_url() -> String {
-    format!("{}/pypi", &mockito::server_url())
+    format!("{}/pypi", &crate::test_helper::server_url())
 }
 
 impl Registry for PyPI {

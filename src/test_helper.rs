@@ -1,9 +1,19 @@
 use crate::Package;
-use mockito::{mock, Mock};
+use mockito::{Mock, Server, ServerGuard};
 use once_cell::sync::Lazy;
-use std::{fs, panic, path::PathBuf, sync::Mutex};
+use std::{cell::RefCell, fs, panic, path::PathBuf, sync::Mutex};
 
 static LOCK: Lazy<Mutex<()>> = Lazy::new(|| Mutex::default());
+
+// Each test thread gets its own mock server, so that mocks never interfere
+// with each other even when the same path is mocked with different responses.
+thread_local! {
+    static MOCK_SERVER: RefCell<Option<ServerGuard>> = const { RefCell::new(None) };
+}
+
+pub(crate) fn server_url() -> String {
+    MOCK_SERVER.with(|cell| cell.borrow_mut().get_or_insert_with(Server::new).url())
+}
 
 pub(crate) fn within_test_dir(f: fn(path: PathBuf)) {
     // To avoid problems when working in parallel with the file system
@@ -61,9 +71,13 @@ pub(crate) fn mock_pypi(pkg: &Package, status: usize, data_path: &str) -> (Mock,
 }
 
 pub(crate) fn mock_http(path: &str, status: usize, body: &str) -> Mock {
-    mock("GET", path)
-        .with_status(status)
-        .with_header("Content-Type", "application/json; charset=utf-8")
-        .with_body(body)
-        .create()
+    MOCK_SERVER.with(|cell| {
+        cell.borrow_mut()
+            .get_or_insert_with(Server::new)
+            .mock("GET", path)
+            .with_status(status)
+            .with_header("Content-Type", "application/json; charset=utf-8")
+            .with_body(body)
+            .create()
+    })
 }

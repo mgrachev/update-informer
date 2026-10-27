@@ -4,9 +4,6 @@ use crate::{
 };
 use serde::Deserialize;
 
-#[cfg(test)]
-use mockito;
-
 #[cfg(not(test))]
 const REGISTRY_URL: &str = "https://crates.io";
 
@@ -30,7 +27,7 @@ fn get_base_url() -> String {
 
 #[cfg(test)]
 fn get_base_url() -> String {
-    format!("{}/api/v1/crates", &mockito::server_url())
+    format!("{}/api/v1/crates", &crate::test_helper::server_url())
 }
 
 impl Registry for Crates {

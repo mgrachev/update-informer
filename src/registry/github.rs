@@ -4,9 +4,6 @@ use crate::{
 };
 use serde::Deserialize;
 
-#[cfg(test)]
-use mockito;
-
 #[cfg(not(test))]
 const REGISTRY_URL: &str = "https://api.github.com";
 
@@ -25,7 +22,7 @@ fn get_base_url() -> String {
 
 #[cfg(test)]
 fn get_base_url() -> String {
-    format!("{}/repos", &mockito::server_url())
+    format!("{}/repos", &crate::test_helper::server_url())
 }
 
 impl Registry for GitHub {
