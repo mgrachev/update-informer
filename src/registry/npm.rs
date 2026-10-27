@@ -22,7 +22,7 @@ fn get_base_url() -> String {
 
 #[cfg(test)]
 fn get_base_url() -> String {
-    mockito::server_url()
+    crate::test_helper::server_url()
 }
 
 impl Registry for Npm {
