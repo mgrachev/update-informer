@@ -88,4 +88,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: dprint/check@v2.5
+      - uses: dprint/check@v2.6
