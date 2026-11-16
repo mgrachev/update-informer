@@ -10,6 +10,7 @@
 [codecov-url]: https://codecov.io/gh/mgrachev/update-informer
 [downloads-badge]: https://img.shields.io/crates/d/update-informer
 [etcetera]: https://github.com/lunacookies/etcetera
+[rustls-platform-verifier]: https://github.com/rustls/rustls-platform-verifier
 [ureq]: https://github.com/algesten/ureq
 [semver]: https://github.com/dtolnay/semver
 [serde]: https://github.com/serde-rs/serde
@@ -76,16 +77,26 @@ update-informer = { version = "1.1", default-features = false, features = ["gith
 
 Available features:
 
-| Name       | Type                | Default? |
-| ---------- | ------------------- | -------- |
-| crates     | Registry            | Yes      |
-| github     | Registry            | No       |
-| npm        | Registry            | No       |
-| pypi       | Registry            | No       |
-| [ureq]     | HTTP client         | Yes      |
-| [reqwest]  | HTTP client         | No       |
-| rustls     | HTTP client feature | Yes      |
-| native-tls | HTTP client feature | No       |
+| Name                     | Type                | Default? |
+| ------------------------ | ------------------- | -------- |
+| crates                   | Registry            | Yes      |
+| github                   | Registry            | No       |
+| npm                      | Registry            | No       |
+| pypi                     | Registry            | No       |
+| [ureq]                   | HTTP client         | Yes      |
+| [reqwest]                | HTTP client         | No       |
+| rustls                   | HTTP client feature | Yes      |
+| rustls-platform-verifier | HTTP client feature | No       |
+| native-tls               | HTTP client feature | No       |
+
+By default, `rustls` verifies certificates using Mozilla's bundled root certificates. To verify
+them using the operating system's certificate store instead, enable the `rustls-platform-verifier`
+feature:
+
+```toml
+[dependencies]
+update-informer = { version = "1.1", features = ["rustls-platform-verifier"] }
+```
 
 ## Checking for a new version
 

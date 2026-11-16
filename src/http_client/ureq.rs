@@ -19,6 +19,13 @@ impl HttpClient for UreqHttpClient {
                 .build(),
         );
 
+        #[cfg(feature = "rustls-platform-verifier")]
+        let config = config.tls_config(
+            ureq::tls::TlsConfig::builder()
+                .root_certs(ureq::tls::RootCerts::PlatformVerifier)
+                .build(),
+        );
+
         let agent: Agent = config.build().into();
         let mut req = agent.get(url);
 

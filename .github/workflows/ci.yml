@@ -22,6 +22,7 @@ jobs:
           - reqwest
         tls_backend:
           - rustls
+          - rustls-platform-verifier
           - native-tls
     steps:
       - uses: actions/checkout@v7
@@ -42,6 +43,7 @@ jobs:
           - reqwest
         tls_backend:
           - rustls
+          - rustls-platform-verifier
           - native-tls
     steps:
       - uses: actions/checkout@v7
