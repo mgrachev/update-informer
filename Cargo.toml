@@ -25,6 +25,7 @@ pypi = []
 ureq = ["dep:ureq"]
 reqwest = ["dep:reqwest"]
 rustls = ["ureq?/rustls", "reqwest?/rustls"]
+rustls-platform-verifier = ["rustls", "ureq?/platform-verifier"]
 native-tls = ["ureq?/native-tls", "reqwest?/native-tls"]
 
 [dependencies]
