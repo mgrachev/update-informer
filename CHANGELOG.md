@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.4.0](https://github.com/mgrachev/update-informer/releases/tag/v1.4.0) - 2026-11-16
+
+### Features
+
+- Add rustls-platform-verifier support ([#189](https://github.com/mgrachev/update-informer/pull/189))
+
+### Miscellaneous Tasks
+
+- Update isahc requirement from 1.7 to 2.0 ([#181](https://github.com/mgrachev/update-informer/pull/181))
+- Update `mockito` from 0.32 to 1.7 ([#184](https://github.com/mgrachev/update-informer/pull/184))
+- Update etcetera requirement from 0.10.0 to 0.11.0 ([#175](https://github.com/mgrachev/update-informer/pull/175))
+
+### Refactor
+
+- Rename `rustls-tls` feature to `rustls` ([#186](https://github.com/mgrachev/update-informer/pull/186))
+
+### Update dependencies
+
+- Bump dprint/check from 2.5 to 2.6 ([#188](https://github.com/mgrachev/update-informer/pull/188))
+- Bump `reqwest` to 0.13 ([#185](https://github.com/mgrachev/update-informer/pull/185))
+- Bump actions/checkout from 6 to 7 ([#180](https://github.com/mgrachev/update-informer/pull/180))
+- Bump codecov/codecov-action from 6 to 7 ([#179](https://github.com/mgrachev/update-informer/pull/179))
+- Bump dprint/check from 2.3 to 2.5 ([#182](https://github.com/mgrachev/update-informer/pull/182))
+- Bump softprops/action-gh-release from 2 to 3 ([#183](https://github.com/mgrachev/update-informer/pull/183))
+- Bump codecov/codecov-action from 5 to 6 ([#178](https://github.com/mgrachev/update-informer/pull/178))
+- Bump actions/checkout from 5 to 6 ([#176](https://github.com/mgrachev/update-informer/pull/176))
+- Bump actions/checkout from 4 to 5 ([#174](https://github.com/mgrachev/update-informer/pull/174))
+- Bump dprint/check from 2.2 to 2.3 ([#168](https://github.com/mgrachev/update-informer/pull/168))
+
 ## [v1.3.0](https://github.com/mgrachev/update-informer/releases/tag/v1.3.0) - 2025-07-11
 
 ### Fixes
